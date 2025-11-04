@@ -1,6 +1,6 @@
 try:
     # python2
-    from urllib2 import HTTPError
+    from six.moves.urllib.error import HTTPError
 except ImportError:  # pragma: no cover
     # python3
     from urllib.request import HTTPError
@@ -48,10 +48,11 @@ class Endpoint(object):
         return '{0}/{1}'.format(self.get_base_path(), path).replace('//', '/')
 
     def _get(self, path, ok_status=None, headers=None):
-        return self._request(path, ok_status=ok_status, headers=headers)
+        return self._request(path, ok_status=ok_status, headers=headers, method='GET')
 
-    def _post(self, path, ok_status=None, headers=None, **post_args):
-        return self._request(path, ok_status=ok_status, data=post_args or {}, headers=headers)
+    def _post(self, path, ok_status=None, headers=None, method=None, **post_args):
+        return self._request(path, ok_status=ok_status, data=post_args or None,
+                             headers=headers, method=method)
 
     # TODO: Add tests for adding headers
     def _request(self, path, ok_status, data=None, headers=None, method=None):

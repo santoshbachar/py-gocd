@@ -1,7 +1,8 @@
 import pytest
 try:
     # python2
-    from urllib2 import urlopen, HTTPError
+    from six.moves.urllib.request import urlopen
+    from six.moves.urllib.error import HTTPError
 except ImportError:
     # python3
     from urllib.request import urlopen, HTTPError
