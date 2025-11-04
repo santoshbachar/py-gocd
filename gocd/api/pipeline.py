@@ -26,7 +26,7 @@ class Pipeline(Endpoint):
         self.server = server
         self.name = name
 
-    def history(self, offset=0):
+    def history(self, page_size=0, after=None, before=None):
         """Lists previous instances/runs of the pipeline
 
         See the `Go pipeline history documentation`__ for example responses.
@@ -34,13 +34,26 @@ class Pipeline(Endpoint):
         .. __: http://api.go.cd/current/#get-pipeline-history
 
         Args:
-          offset (int, optional): How many instances to skip for this response.
+          page_size (int, optional): The number of records per page. Can be between 10 and 100. Defaults to 10.
+          after (int, optional): The cursor value for fetching the next set of records.
+          before (int, optional): The cursor value for fetching the previous set of records.
 
         Returns:
           Response: :class:`gocd.api.response.Response` object
         """
-        return self._get('/history?page_size={offset:d}'.format(offset=offset or 10),
-                         headers={"Accept": "application/vnd.go.cd.v1+json"})
+
+        ps = page_size or 10
+        parts = [f'page_size={ps}']
+
+        if after is not None:
+            parts.append(f'after={after}')
+        if before is not None:
+            parts.append(f'before={before}')
+
+        query = '&'.join(parts)
+        path = f'/history?{query}'
+
+        return self._get(path, headers={"Accept": "application/vnd.go.cd.v1+json"})
 
     def release(self):
         """Releases a previously locked pipeline
@@ -53,7 +66,8 @@ class Pipeline(Endpoint):
         Returns:
           Response: :class:`gocd.api.response.Response` object
         """
-        return self._post('/releaseLock', headers={"Confirm": True})
+        return self._post('/unlock', headers={
+            "Accept":"application/vnd.go.cd.v1+json","X-GoCD-Confirm": True}, method="POST")
 
     #: This is an alias for :meth:`release`
     unlock = release

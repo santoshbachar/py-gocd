@@ -6,7 +6,7 @@ interactions:
       Host: ['localhost:8153']
       User-Agent: [py-gocd]
     method: GET
-    uri: http://localhost:8153/go/api/pipelines/Simple/history/0
+    uri: http://localhost:8153/go/api/pipelines/Simple/history?page_size
   response:
     body: {string: "{\"pagination\":{\"offset\":0,\"total\":8,\"page_size\":10},\"\
         pipelines\":[{\"label\":\"8\",\"name\":\"Simple\",\"natural_order\":8.0,\"\

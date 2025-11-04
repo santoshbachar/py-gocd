@@ -8,7 +8,7 @@ interactions:
       Host: ['localhost:8153']
       User-Agent: [py-gocd]
     method: POST
-    uri: http://localhost:8153/go/api/pipelines/Simple-with-lock/releaseLock
+    uri: http://localhost:8153/go/api/pipelines/Simple-with-lock/unlock
   response:
     body: {string: !!python/unicode 'pipeline lock released for Simple-with-lock
 
