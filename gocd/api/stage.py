@@ -73,7 +73,7 @@ class Stage(Endpoint):
         .. __: https://api.gocd.org/current/#cancel-stage
 
         Args:
-          stage_counter (str): Name of the pipeline.
+          stage_counter (int): Name of the pipeline.
 
         Returns:
           Response: :class:`gocd.api.response.Response` object
