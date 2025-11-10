@@ -6,7 +6,8 @@ __all__ = ['Stage']
 class Stage(Endpoint):
     base_path = 'go/api/stages/{id}'
 
-    def __init__(self, server, pipeline_name, stage_name, pipeline_counter=None, stage_counter=None):
+    def __init__(self, server, pipeline_name, stage_name, pipeline_counter=None,
+        stage_counter=None):
         """A wrapper for the `Go stage API`__
 
         .. __: http://api.go.cd/current/#stages
@@ -61,16 +62,36 @@ class Stage(Endpoint):
         return self._post('/run', 202, headers={
             "X-GoCD-Confirm": "true",
             "Accept": "application/vnd.go.cd.v2+json"},
-            method="POST"
-        )
+                          method="POST"
+                          )
 
-    def cancel(self):
+    def cancel(self, stage_counter=None):
         """Cancels a currently running stage
+
+        See the `Go stage cancel documentation`__ for example responses.
+
+        .. __: https://api.gocd.org/current/#cancel-stage
+
+        Args:
+          stage_counter (str): Name of the pipeline.
 
         Returns:
           Response: :class:`gocd.api.response.Response` object
         """
-        return self._post('/cancel', headers={"Confirm": True})
+
+        if stage_counter is None:
+            raise Exception('You must provide a stage counter')
+
+        if type(stage_counter) is not int:
+            raise Exception('Stage counter must be an integer')
+
+        path = f'/{stage_counter}/cancel'
+
+        return self._post(path, headers={
+            "X-GoCD-Confirm": "true", "Accept":
+                "application/vnd.go.cd.v3+json"},
+                          method="POST"
+                          )
 
     def history(self, offset=0):
         """Lists previous instances/runs of the stage
@@ -114,8 +135,8 @@ class Stage(Endpoint):
             if pipeline_instance is None:
                 pipeline_instance = (
                     self.server
-                        .pipeline(self.pipeline_name)
-                        .instance(pipeline_counter)
+                    .pipeline(self.pipeline_name)
+                    .instance(pipeline_counter)
                 )
 
             for stages in pipeline_instance['stages']:
