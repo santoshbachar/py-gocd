@@ -45,6 +45,8 @@ class Endpoint(object):
 
     def _join_path(self, path):
         # TODO: Make this more robust. `urlparse.urljoin` didn't quite work as I wanted.
+        print("🐞 self.get_base_path() = ", self.get_base_path())
+        print("🐞 path() = ", path)
         return '{0}/{1}'.format(self.get_base_path(), path).replace('//', '/')
 
     def _get(self, path, ok_status=None, headers=None):
