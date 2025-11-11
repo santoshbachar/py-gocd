@@ -1,4 +1,3 @@
-import json
 import re
 
 try:
@@ -151,11 +150,7 @@ class Server(object):
           file like object: The response from a
             :func:`urllib2.urlopen` call
         """
-        print("🐞 python debug - path is %s" % path)
-        print("🐞 python debug - data is %s" % data)
-        print("🐞 python debug - headers is %s" % headers)
-        print("🐞 python debug - method is %s" % method)
-        if data and isinstance(data, str):
+        if isinstance(data, str):
             data = data.encode('utf-8')
         response = urlopen(self._request(path, data=data, headers=headers, method=method))
         self._set_session_cookie(response)
@@ -276,8 +271,7 @@ class Server(object):
 
     def _encode_data(self, data):
         if isinstance(data, dict):
-            # return urlencoder.urlencode(data).encode('utf-8')
-            return json.dumps(data, ensure_ascii=False).encode('utf-8')
+            return urlencoder.urlencode(data).encode('utf-8')
         elif isinstance(data, str):
             return data.encode('utf-8')
         elif isinstance(data, bytes):
@@ -288,7 +282,6 @@ class Server(object):
             return None
 
     def _url(self, path):
-        print("🐞 host and path %s" % urljoin(self.host, path))
         return urljoin(self.host, path)
 
     def _inject_authenticity_token(self, data, path):
@@ -297,7 +290,8 @@ class Server(object):
                 path.startswith('go/api')):
             return data
 
-        print("🐞 _inject_authenticity_token() adding authenticity_token")
+        if data == '':
+            data = {}
 
         data.update(authenticity_token=self._authenticity_token)
         return data

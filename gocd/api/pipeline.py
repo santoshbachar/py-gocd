@@ -39,8 +39,7 @@ class Pipeline(Endpoint):
         Returns:
           Response: :class:`gocd.api.response.Response` object
         """
-        return self._get('/history?page_size={offset:d}'.format(offset=offset or 10),
-                         headers={"Accept": "application/vnd.go.cd.v1+json"})
+        return self._get('/history/{offset:d}'.format(offset=offset or 0))
 
     def release(self):
         """Releases a previously locked pipeline
@@ -58,7 +57,7 @@ class Pipeline(Endpoint):
     #: This is an alias for :meth:`release`
     unlock = release
 
-    def pause(self, reason='Triggered via API. No reason provided.'):
+    def pause(self, reason=''):
         """Pauses the current pipeline
 
         See the `Go pipeline pause documentation`__ for example responses.
@@ -71,9 +70,7 @@ class Pipeline(Endpoint):
         Returns:
           Response: :class:`gocd.api.response.Response` object
         """
-        return self._post('/pause', headers={
-            "Accept": "application/vnd.go.cd.v1+json",
-            "Content-Type": "application/json"}, pause_cause=reason)
+        return self._post('/pause', headers={"Confirm": True}, pauseCause=reason)
 
     def unpause(self):
         """Unpauses the pipeline
@@ -85,9 +82,7 @@ class Pipeline(Endpoint):
         Returns:
           Response: :class:`gocd.api.response.Response` object
         """
-        return self._post('/unpause', headers={
-            "X-GoCD-Confirm": True,
-            "Accept": "application/vnd.go.cd.v1+json"}, method="POST")
+        return self._post('/unpause', headers={"Confirm": True})
 
     def status(self):
         """Returns the current status of this pipeline
@@ -99,9 +94,7 @@ class Pipeline(Endpoint):
         Returns:
           Response: :class:`gocd.api.response.Response` object
         """
-        return self._get('/status', headers={
-            "Accept": "application/vnd.go.cd.v1+json"
-        })
+        return self._get('/status')
 
     def instance(self, counter=None):
         """Returns all the information regarding a specific pipeline run
@@ -157,11 +150,7 @@ class Pipeline(Endpoint):
             variables=variables,
             secure_variables=secure_variables,
             material_fingerprint=materials,
-            headers={
-                "Accept":"application/vnd.go.cd.v1+json",
-                "Content-Type":"application/json",
-                "X-GoCD-Confirm":"true"
-            },
+            headers={"Confirm": True},
         )
 
         scheduling_args = dict((k, v) for k, v in scheduling_args.items() if v is not None)
@@ -193,7 +182,7 @@ class Pipeline(Endpoint):
             # better than returning None.
             return response
         else:
-            return self._post('/schedule', ok_status=202, method="POST", **scheduling_args)
+            return self._post('/schedule', ok_status=202, **scheduling_args)
 
     #: This is an alias for :meth:`schedule`
     run = schedule

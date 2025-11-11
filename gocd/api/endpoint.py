@@ -48,11 +48,10 @@ class Endpoint(object):
         return '{0}/{1}'.format(self.get_base_path(), path).replace('//', '/')
 
     def _get(self, path, ok_status=None, headers=None):
-        return self._request(path, ok_status=ok_status, headers=headers, method='GET')
+        return self._request(path, ok_status=ok_status, headers=headers)
 
-    def _post(self, path, ok_status=None, headers=None, method=None, **post_args):
-        return self._request(path, ok_status=ok_status, data=post_args or None,
-                             headers=headers, method=method)
+    def _post(self, path, ok_status=None, headers=None, **post_args):
+        return self._request(path, ok_status=ok_status, data=post_args or None, headers=headers)
 
     # TODO: Add tests for adding headers
     def _request(self, path, ok_status, data=None, headers=None, method=None):
