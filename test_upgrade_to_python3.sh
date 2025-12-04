@@ -16,10 +16,10 @@ PYTHON_VERSION=$("$WHICH_PYTHON" --version 2>&1)
 # Set Python path
 PYTHON_EXEC="$WHICH_PYTHON"
 
-if [ "$PYTHON_VERSION" != "Python 3.13.9" ]; then
-    echo "py-gocd strictly requires Python 3.13.9"
+if [ "$PYTHON_VERSION" != "Python 3.12.12" ]; then
+    echo "py-gocd strictly requires Python 3.12.12"
     echo "Current version: $PYTHON_VERSION"
-    echo "Please provide the path to Python 3.13.9 (can be a virtual environment):"
+    echo "Please provide the path to Python 3.12.12 (can be a virtual environment):"
     read -r PYTHON_VENV
 
     # Validate that the user actually entered something
@@ -37,8 +37,8 @@ if [ "$PYTHON_VERSION" != "Python 3.13.9" ]; then
     # Now check the version of the provided Python
     PYTHON_VENV_VERSION=$("$PYTHON_VENV" --version 2>&1)
 
-    if [ "$PYTHON_VENV_VERSION" != "Python 3.13.9" ]; then
-        echo "Error: The provided Python is '$PYTHON_VENV_VERSION', but 3.13.9 is required."
+    if [ "$PYTHON_VENV_VERSION" != "Python 3.12.12" ]; then
+        echo "Error: The provided Python is '$PYTHON_VENV_VERSION', but 3.12.12 is required."
         exit 1
     fi
 
