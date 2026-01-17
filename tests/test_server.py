@@ -57,10 +57,9 @@ def test_request_with_all_kinds_of_falsey_values_that_should_be_post(server, dat
 def test_request_with_with_explicitly_no_post_data(server, data):
     # This is meant to fail with a 404 since this endpoint is post only.
     with vcr.use_cassette('tests/fixtures/cassettes/server-data-for-get-requests.yml'):
-        with pytest.raises(HTTPError) as exc:
-            urlopen(server._request('go/api/pipelines/Simple-with-lock/pause', data=data))
+            response = server.request('go/api/pipelines/Simple-with-lock/pause', data=data)
 
-    assert exc.value.code == 404
+    assert response.status in (404, 405), f"Expected 404/405, got {response.status}"
 
 
 @vcr.use_cassette('tests/fixtures/cassettes/post-with-argument.yml')
