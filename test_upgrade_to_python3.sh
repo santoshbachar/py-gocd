@@ -11,15 +11,20 @@ if [ -z "$WHICH_PYTHON" ] || [ ! -x "$WHICH_PYTHON" ]; then
 fi
 
 # Check current python version
-PYTHON_VERSION=$("$WHICH_PYTHON" --version 2>&1)
+PYTHON_VERSION=$("$WHICH_PYTHON" --version 2>&1 | awk '{print $2}')
 
 # Set Python path
 PYTHON_EXEC="$WHICH_PYTHON"
 
-if [ "$PYTHON_VERSION" != "Python 3.12.12" ]; then
-    echo "py-gocd strictly requires Python 3.12.12"
+# Extract major.minor.patch (in case there are extra suffixes like 3.12.12+)
+VERSION_MAJOR=$(echo "$PYTHON_VERSION" | cut -d. -f1)
+VERSION_MINOR=$(echo "$PYTHON_VERSION" | cut -d. -f2)
+# Patch can be empty or anything
+
+if [[ ! "$VERSION_MAJOR" -eq 3 && "$VERSION_MINOR" -eq 12 ]]; then
+    echo "py-gocd strictly requires Python 3.12.x (any patch version):"
     echo "Current version: $PYTHON_VERSION"
-    echo "Please provide the path to Python 3.12.12 (can be a virtual environment):"
+    echo "Please provide the path to Python 3.12.x (can be a virtual environment):"
     read -r PYTHON_VENV
 
     # Validate that the user actually entered something
