@@ -90,6 +90,21 @@ def test_create(server, scm_object):
     assert response.content_type == 'application/vnd.go.cd.v1+json'
     assert scm_object == response_dict
 
+@vcr.use_cassette('tests/fixtures/cassettes/api/pluggable_scm/create-unauthorised.yml')
+def test_create_unauthorised(server, scm_object):
+    response = gocd.api.PluggableSCM(server, scm_object["name"]).create(scm_object)
+
+    assert not response.is_ok
+    assert response.status_code == 401
+    assert response.content_type == 'application/vnd.go.cd.v1+json'
+
+    payload = response.payload
+    assert "message" in payload
+    assert "not authorized" in payload["message"].lower()
+
+    assert "_links" not in payload
+    assert "_embedded" not in payload
+
 
 @vcr.use_cassette('tests/fixtures/cassettes/api/pluggable_scm/edit-success.yml')
 def test_edit_success(server, scm_object):
