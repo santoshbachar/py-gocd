@@ -45,6 +45,16 @@ def test_list(server):
     assert response.content_type == 'application/vnd.go.cd.v1+json'
     assert isinstance(response["_embedded"]["scms"], list)
 
+@vcr.use_cassette('tests/fixtures/cassettes/api/pluggable_scm/list-unauthorised.yml')
+def test_list_unauthorised(server):
+    response = gocd.api.PluggableSCM(server).list()
+
+    assert not response.is_ok
+    assert response.status_code == 401
+    assert response.content_type == 'application/vnd.go.cd.v1+json'
+
+    payload = response.payload
+    assert payload["message"] == "You are not authorized to access this resource!"
 
 @vcr.use_cassette('tests/fixtures/cassettes/api/pluggable_scm/get-found.yml')
 def test_get_found(server):
