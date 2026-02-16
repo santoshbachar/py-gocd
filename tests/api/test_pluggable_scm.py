@@ -67,6 +67,23 @@ def test_get_found(server):
     assert response["name"] == name
     assert isinstance(response["configuration"], list)
 
+@vcr.use_cassette('tests/fixtures/cassettes/api/pluggable_scm/get-found-unauthorised.yml')
+def test_get_found_unauthorised(server):
+    name = "SCM-NAME"
+    response = gocd.api.PluggableSCM(server, name).get()
+
+    assert not response.is_ok
+    assert response.status_code == 401
+    assert response.content_type == 'application/vnd.go.cd.v1+json'
+
+    payload = response.payload
+    assert "message" in payload
+    assert "not authorized" in payload["message"].lower()
+
+    assert "id" not in payload
+    assert "name" not in payload
+    assert "configuration" not in payload
+    assert "_links" not in payload
 
 @vcr.use_cassette('tests/fixtures/cassettes/api/pluggable_scm/get-not-found.yml')
 def test_get_not_found(server):
