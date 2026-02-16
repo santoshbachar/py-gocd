@@ -119,6 +119,22 @@ def test_edit_success(server, scm_object):
     assert response.content_type == 'application/vnd.go.cd.v1+json'
     assert scm_object == response_dict
 
+@vcr.use_cassette('tests/fixtures/cassettes/api/pluggable_scm/edit-success-unauthorised.yml')
+def test_edit_success_unauthorised(server, scm_object):
+    etag = '"483ba431cc141323e3c7c00c944d4878"'
+    response = gocd.api.PluggableSCM(server, scm_object["name"]).edit(scm_object, etag)
+
+    assert not response.is_ok
+    assert response.status_code == 401
+    assert response.content_type == 'application/vnd.go.cd.v1+json'
+
+    payload = response.payload
+    assert "message" in payload
+    assert "not authorized" in payload["message"].lower()
+
+    assert "_links" not in payload
+    assert "_embedded" not in payload
+
 
 @vcr.use_cassette('tests/fixtures/cassettes/api/pluggable_scm/edit-fail.yml')
 def test_edit_fail(server, scm_object):
