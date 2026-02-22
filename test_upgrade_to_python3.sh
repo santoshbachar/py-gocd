@@ -71,6 +71,12 @@ test_series() {
         true
     }
 
+    echo "=== Installing py-gocd requirements ==="
+    $PIP_CMD install -r requirements.txt || {
+        echo "Failed to install py-gocd requirements.txt"
+        exit 1
+    }
+
     echo "=== Installing test requirements ==="
     $PIP_CMD install --upgrade -r test-requirements.txt || {
         echo "Failed to install test-requirements.txt"
