@@ -153,6 +153,24 @@ def test_create_successful(server, pipeline_json):
 
     assert response.is_ok
 
+@vcr.use_cassette('tests/fixtures/cassettes/api/pipeline-config/create-successful-unauthorised.yml')
+def test_create_successful_unauthorised(server, pipeline_json):
+    api_config = gocd.api.PipelineConfig(server, "PyGoCd-Copy-UnAuth")
+
+    pipeline_json["name"] = "PyGoCd-Copy-UnAuth"
+    pipeline_json["group"] = "Tools"
+
+    response = api_config.create(pipeline_json)
+
+    assert not response.is_ok
+    assert response.status_code == 401
+    assert response.content_type == "application/vnd.go.cd.v1+json"
+
+    payload = response.payload
+
+    assert len(payload) == 1
+    assert "message" in payload
+    assert "not authorized" in payload["message"].lower()
 
 @vcr.use_cassette('tests/fixtures/cassettes/api/pipeline-config/create-error.yml')
 def test_create_error(server, pipeline_json):
