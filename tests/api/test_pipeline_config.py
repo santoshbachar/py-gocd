@@ -95,6 +95,22 @@ def test_get_existing(server, pipeline_json):
     del response_body["_links"]
     assert response_body == pipeline_json
 
+@vcr.use_cassette('tests/fixtures/cassettes/api/pipeline-config/get-successful-unauthorised.yml')
+def test_get_existing_unauthorised(server, pipeline_json):
+    api_config = gocd.api.PipelineConfig(server, "PyGoCd")
+
+    response = api_config.get()
+
+    assert not response.is_ok
+    assert response.status_code == 401
+    assert response.content_type == "application/vnd.go.cd.v1+json"
+
+    payload = response.payload
+    assert "message" in payload
+    assert "not authorized" in payload["message"].lower()
+
+    assert "_links" not in payload
+    assert "name" not in payload
 
 @vcr.use_cassette('tests/fixtures/cassettes/api/pipeline-config/get-missing.yml')
 def test_get_missing(server):
