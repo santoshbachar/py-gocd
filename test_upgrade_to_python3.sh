@@ -3,7 +3,7 @@
 set -euo pipefail
 
 # Find python in PATH
-WHICH_PYTHON=$(which python || echo "")
+WHICH_PYTHON=$(which python3 || echo "")
 
 if [ -z "$WHICH_PYTHON" ] || [ ! -x "$WHICH_PYTHON" ]; then
     echo "Python is not installed or not in PATH"
