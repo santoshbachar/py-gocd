@@ -1,12 +1,4 @@
 import pytest
-try:
-    # python2
-    from six.moves.urllib.request import urlopen
-    from six.moves.urllib.error import HTTPError
-except ImportError:
-    # python3
-    from urllib.request import urlopen, HTTPError
-
 
 import vcr
 
@@ -21,7 +13,8 @@ def server():
 
 @pytest.mark.parametrize('cassette_name', [
     'tests/fixtures/cassettes/server-basic-auth-get.yml',
-    'tests/fixtures/cassettes/server-without-auth-get.yml',
+    'tests/fixtures/cassettes/server-without-auth-get-considering-a-proxy-injecting-an-auth-token'
+    '-or-the-gocd-server-itself-has-no-auth-for-this-specific-uri.yml',
 ])
 def test_get_request_with_and_without_auth(server, cassette_name):
     with vcr.use_cassette(cassette_name):
@@ -30,10 +23,24 @@ def test_get_request_with_and_without_auth(server, cassette_name):
     assert response.code == 200
     assert response.headers["Content-Type"] == 'application/json; charset=utf-8'
 
+@pytest.mark.parametrize('cassette_name', [
+    'tests/fixtures/cassettes/server-without-auth-get.yml',
+])
+def test_get_request_without_auth(server, cassette_name):
+    with vcr.use_cassette(cassette_name):
+        response = server.get('go/api/pipelines/Simple/history/0')
+
+    assert response.code == 401
+    assert response.headers["Content-Type"] == 'text/html; charset=iso-8859-1'
+
+    payload = response.data.decode("iso-8859-1")
+
+    assert "Full authentication is required to access this resource" in payload
 
 @pytest.mark.parametrize('cassette_name', [
     'tests/fixtures/cassettes/server-basic-auth-post.yml',
-    'tests/fixtures/cassettes/server-without-auth-post.yml',
+    'tests/fixtures/cassettes/server-without-auth-post-considering-a-proxy-injecting-an-auth-token'
+    '-or-the-gocd-server-itself-has-no-auth-for-this-specific-uri.yml',
 ])
 def test_post_request_without_argument(server, cassette_name):
     with vcr.use_cassette(cassette_name):
@@ -42,6 +49,19 @@ def test_post_request_without_argument(server, cassette_name):
     assert response.code == 202
     assert response.headers["Content-Type"] == 'text/html; charset=utf-8'
 
+@pytest.mark.parametrize('cassette_name', [
+    'tests/fixtures/cassettes/server-without-auth-post.yml',
+])
+def test_post_request_without_argument_unauthorised(server, cassette_name):
+    with vcr.use_cassette(cassette_name):
+        response = server.post('go/api/pipelines/Simple/schedule')
+
+    assert response.code == 401
+    assert response.headers["Content-Type"] == 'text/html; charset=iso-8859-1'
+
+    payload = response.data.decode("iso-8859-1")
+
+    assert "Full authentication is required to access this resource" in payload
 
 @pytest.mark.parametrize('data', [{}, '', True])
 def test_request_with_all_kinds_of_falsey_values_that_should_be_post(server, data):
@@ -75,12 +95,13 @@ def test_post_with_an_argument(server):
 @vcr.use_cassette('tests/fixtures/cassettes/server-enable-session-auth.yml')
 def test_post_session_with_an_argument(server):
     server.add_logged_in_session()
-    request = server._request('go/run/Simple-with-lock/11/firstStage', data={})
+    response = server.request('go/run/Simple-with-lock/11/firstStage', data={})
 
-    assert server._session_id in request.headers['Cookie']
-    assert 'JSESSIONID=JSESSIONID=' not in request.headers['Cookie']
-    assert 'authenticity_token' in request.data.decode('utf-8')
+    assert response is not None
+    assert server._session_id is not None
+    assert 'JSESSIONID=' in server._session_id
 
+    assert 'authenticity_token' in response.data.decode('utf-8')
 
 @vcr.use_cassette('tests/fixtures/cassettes/server-without-auth-get.yml')
 def test_set_session_cookie_after_successful_request(server):
@@ -91,10 +112,7 @@ def test_set_session_cookie_after_successful_request(server):
 
     # Ensure the saved session cookie is used in subsequent requests
     with vcr.use_cassette('tests/fixtures/cassettes/server-enable-session-auth.yml'):
-        # print("debug 1")
         request = server.request('go/run/Simple-with-lock/11/firstStage', data={})
-        # print("debug")
-        # assert server._session_id in request.headers['Cookie']
         assert request is not None
 
 
