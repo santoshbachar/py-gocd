@@ -132,6 +132,25 @@ def test_edit_successful(server, pipeline_json):
 
     assert response.is_ok
 
+@vcr.use_cassette('tests/fixtures/cassettes/api/pipeline-config/edit-unauthorised.yml')
+def test_edit_unauthorised(server, pipeline_json):
+    api_config = gocd.api.PipelineConfig(server, "PyGoCd")
+    etag = '"6b60a77d27312e3a21bfd59163db1e48"'
+    pipeline_json["materials"][0][
+        "attributes"]["url"] = "https://github.com/henriquegemignani/py-gocd.git"
+
+    response = api_config.edit(pipeline_json, etag)
+
+    assert not response.is_ok
+    assert response.status_code == 401
+    assert response.content_type == "application/vnd.go.cd.v1+json"
+
+    payload = response.payload
+
+    assert len(payload) == 1
+    assert payload == {
+        "message": "You are not authorized to access this resource!"
+    }
 
 @vcr.use_cassette('tests/fixtures/cassettes/api/pipeline-config/edit-error.yml')
 def test_edit_error(server, pipeline_json):
@@ -154,7 +173,7 @@ def test_create_successful(server, pipeline_json):
     assert response.is_ok
 
 @vcr.use_cassette('tests/fixtures/cassettes/api/pipeline-config/create-successful-unauthorised.yml')
-def test_create_successful_unauthorised(server, pipeline_json):
+def test_create_unauthorised(server, pipeline_json):
     api_config = gocd.api.PipelineConfig(server, "PyGoCd-Copy-UnAuth")
 
     pipeline_json["name"] = "PyGoCd-Copy-UnAuth"
