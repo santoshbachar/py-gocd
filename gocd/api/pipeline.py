@@ -52,7 +52,7 @@ class Pipeline(Endpoint):
         Returns:
           Response: :class:`gocd.api.response.Response` object
         """
-        return self._post('/releaseLock', headers={"Confirm": True})
+        return self._post('/releaseLock', headers={"Confirm": "true"})
 
     #: This is an alias for :meth:`release`
     unlock = release
@@ -70,7 +70,7 @@ class Pipeline(Endpoint):
         Returns:
           Response: :class:`gocd.api.response.Response` object
         """
-        return self._post('/pause', headers={"Confirm": True}, pauseCause=reason)
+        return self._post('/pause', headers={"Confirm": "true"}, pauseCause=reason)
 
     def unpause(self):
         """Unpauses the pipeline
@@ -82,7 +82,7 @@ class Pipeline(Endpoint):
         Returns:
           Response: :class:`gocd.api.response.Response` object
         """
-        return self._post('/unpause', headers={"Confirm": True})
+        return self._post('/unpause', headers={"Confirm": "true"})
 
     def status(self):
         """Returns the current status of this pipeline
@@ -150,7 +150,7 @@ class Pipeline(Endpoint):
             variables=variables,
             secure_variables=secure_variables,
             material_fingerprint=materials,
-            headers={"Confirm": True},
+            headers={"Confirm": "true"},
         )
 
         scheduling_args = dict((k, v) for k, v in scheduling_args.items() if v is not None)

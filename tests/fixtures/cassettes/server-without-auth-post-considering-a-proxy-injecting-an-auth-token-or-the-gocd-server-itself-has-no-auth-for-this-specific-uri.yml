@@ -2,7 +2,6 @@ interactions:
 - request:
     body: ''
     headers:
-      Authorization: [Basic YmE6c2VjcmV0]
       Connection: [close]
       Content-Length: ['0']
       Content-Type: [application/x-www-form-urlencoded]
@@ -20,12 +19,12 @@ interactions:
       content-type: [text/html; charset=utf-8]
       expires: ['Thu, 01-Jan-1970 00:00:00 GMT']
       server: [Jetty()]
-      set-cookie: ['JSESSIONID=1hdrny3eqagt7zykcu8gilth2;Path=/go;Expires=Mon, 27-Jul-2015
-          14:26:08 GMT']
+      set-cookie: ['JSESSIONID=162mnwrqt8zov122h8031otek;Path=/go;Expires=Mon, 27-Jul-2015
+          14:25:25 GMT']
       x-content-type-options: [nosniff]
       x-frame-options: [SAMEORIGIN]
-      x-request-id: [68f875d5-20bd-4d22-a297-b156a5d2cab8]
-      x-runtime: ['0.048000']
+      x-request-id: [5ec42aee-feed-4420-8f51-125273286e3c]
+      x-runtime: ['0.043000']
       x-ua-compatible: [chrome=1]
       x-xss-protection: [1; mode=block]
     status: {code: 202, message: Accepted}

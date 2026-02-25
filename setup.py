@@ -26,8 +26,14 @@ class PyTest(TestCommand):
 
 
 def version():
-    import gocd
-    return gocd.__version__
+    # import gocd
+    # return gocd.__version__
+
+    # DO NOT import gocd here — it breaks build isolation because urllib3 isn't installed yet
+
+    # TODO: We need to review whether this code needs to be a package or can it be bundled as
+    #  part of gocd
+    return '1.0.0'
 
 extra_dependencies = []
 if sys.version_info < (2, 7):
@@ -60,12 +66,7 @@ setup(
         'Development Status :: 4 - Beta',
         'Operating System :: OS Independent',
         'Programming Language :: Python',
-        'Programming Language :: Python :: 2',
-        'Programming Language :: Python :: 2.6',
-        'Programming Language :: Python :: 2.7',
-        'Programming Language :: Python :: 3',
-        'Programming Language :: Python :: 3.3',
-        'Programming Language :: Python :: 3.4',
-        'Programming Language :: Python :: 3.5',
+        'Programming Language :: Python :: 3.12'
     ],
+    python_requires='==3.12.12'
 )

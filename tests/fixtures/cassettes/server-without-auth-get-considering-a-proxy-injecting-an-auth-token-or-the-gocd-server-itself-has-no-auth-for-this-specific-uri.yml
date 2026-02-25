@@ -2,7 +2,6 @@ interactions:
 - request:
     body: null
     headers:
-      Authorization: [Basic YmE6c2VjcmV0]
       Connection: [close]
       Host: ['localhost:8153']
       User-Agent: [py-gocd]
@@ -20,12 +19,12 @@ interactions:
       etag: ['"ddb3a8419ebbeb0caa4c9da579039ecf"']
       expires: ['Thu, 01-Jan-1970 00:00:00 GMT']
       server: [Jetty()]
-      set-cookie: ['JSESSIONID=1h8330ihjno5t1iwo2qzf7a14y;Path=/go;Expires=Sun, 26-Jul-2015
-          12:56:47 GMT']
+      set-cookie: ['JSESSIONID=1uj45eb1qzggc1mf97grew2zm5;Path=/go;Expires=Sun, 26-Jul-2015
+          14:05:37 GMT']
       x-content-type-options: [nosniff]
       x-frame-options: [SAMEORIGIN]
-      x-request-id: [31855010-4bd4-422f-a6f3-b19e9f74a37c]
-      x-runtime: ['0.064000']
+      x-request-id: [de6ce6f1-4983-428c-9ed0-04c5cf4dca25]
+      x-runtime: ['0.055000']
       x-ua-compatible: [chrome=1]
       x-xss-protection: [1; mode=block]
     status: {code: 200, message: OK}
