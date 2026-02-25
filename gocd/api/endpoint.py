@@ -1,9 +1,4 @@
-try:
-    # python2
-    from six.moves.urllib.error import HTTPError
-except ImportError:  # pragma: no cover
-    # python3
-    from urllib.request import HTTPError
+from urllib.request import HTTPError
 
 
 from gocd.api.response import Response
