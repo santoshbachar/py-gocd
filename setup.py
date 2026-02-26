@@ -26,8 +26,8 @@ class PyTest(TestCommand):
 
 
 def version():
-    import gocd
-    return gocd.__version__
+    import version
+    return version.PY_GOCD_VERSION
 
 extra_dependencies = []
 if sys.version_info < (2, 7):
@@ -60,14 +60,8 @@ setup(
         'Development Status :: 4 - Beta',
         'Operating System :: OS Independent',
         'Programming Language :: Python',
-        'Programming Language :: Python :: 2',
-        'Programming Language :: Python :: 2.6',
-        'Programming Language :: Python :: 2.7',
         'Programming Language :: Python :: 3',
-        'Programming Language :: Python :: 3.3',
-        'Programming Language :: Python :: 3.4',
-        'Programming Language :: Python :: 3.5',
-        'Programming Language :: Python :: 3.13.9'
+        'Programming Language :: Python :: 3.12.12'
     ],
-    python_requires='==3.13.9'
+    python_requires='==3.12.12'
 )
