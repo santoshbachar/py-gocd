@@ -34,7 +34,7 @@ def pipeline_multiple_stages_manual(server):
     ('tests/fixtures/cassettes/api/pipeline/history-page-default.yml', 0, 12),
 ])
 def test_history(pipeline, cassette_name, page_size, expected_counter):
-    with vcr.use_cassette(cassette_name, record_mode='new_episodes'):
+    with vcr.use_cassette(cassette_name):
         response = pipeline.history(page_size=page_size)
 
     payload = response.payload
