@@ -7,12 +7,12 @@ import gocd.api
 
 @pytest.fixture
 def server():
-    return gocd.Server('http://localhost:8153', user='ba', password='secret')
+    return gocd.Server('http://localhost:8153', user='admin', password='badger')
 
 
 @pytest.fixture
 def pipeline(server):
-    return server.pipeline('Simple')
+    return server.pipeline('up42')
 
 
 @pytest.fixture
@@ -30,20 +30,26 @@ def pipeline_multiple_stages_manual(server):
     return server.pipeline('Multiple-Stages-And-Jobs-Manual')
 
 
-@pytest.mark.parametrize('cassette_name,offset,counter', [
-    ('tests/fixtures/cassettes/api/pipeline/history-offset-0.yml', 0, 11),
-    ('tests/fixtures/cassettes/api/pipeline/history-offset-10.yml', 10, 1)
+@pytest.mark.parametrize('cassette_name,page_size,expected_counter', [
+    ('tests/fixtures/cassettes/api/pipeline/history-page-default.yml', 0, 12),
 ])
-def test_history(pipeline, cassette_name, offset, counter):
-    with vcr.use_cassette(cassette_name):
-        response = pipeline.history(offset=offset)
+def test_history(pipeline, cassette_name, page_size, expected_counter):
+    with vcr.use_cassette(cassette_name, record_mode='new_episodes'):
+        response = pipeline.history(page_size=page_size)
+
+    payload = response.payload
 
     assert response.is_ok
-    assert response.content_type == 'application/json'
-    assert 'pipelines' in response
+    assert response.content_type == 'application/vnd.go.cd.v1+json'
+
+    assert 'pipelines' in payload
+    assert isinstance(payload["pipelines"], list)
+
+    assert "_links" in payload
+
     run = response['pipelines'][0]
-    assert run['name'] == 'Simple'
-    assert run['counter'] == counter
+    assert run['name'] == 'up42'
+    assert run['counter'] == expected_counter
 
 
 @vcr.use_cassette('tests/fixtures/cassettes/api/pipeline/release-successful.yml')
