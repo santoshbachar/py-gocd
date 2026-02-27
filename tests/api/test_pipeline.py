@@ -7,7 +7,7 @@ import gocd.api
 
 @pytest.fixture
 def server():
-    return gocd.Server('http://localhost:8153', user='admin', password='badger')
+    return gocd.Server('http://localhost:8080', user='admin', password='badger')
 
 
 @pytest.fixture
@@ -17,7 +17,7 @@ def pipeline(server):
 
 @pytest.fixture
 def locked_pipeline(server):
-    return server.pipeline('Simple-with-lock')
+    return server.pipeline('up42')
 
 
 @pytest.fixture
@@ -52,7 +52,8 @@ def test_history(pipeline, cassette_name, page_size, expected_counter):
     assert run['counter'] == expected_counter
 
 
-@vcr.use_cassette('tests/fixtures/cassettes/api/pipeline/release-successful.yml')
+@vcr.use_cassette('tests/fixtures/cassettes/api/pipeline/release-successful.yml',
+                  record_mode='new_episodes')
 def test_release(locked_pipeline):
     response = locked_pipeline.release()
 
@@ -77,13 +78,20 @@ def test_release_when_pipeline_is_unlocked(locked_pipeline):
 
 
 @vcr.use_cassette('tests/fixtures/cassettes/api/pipeline/pause-successful.yml')
-def test_pause(pipeline):
+def test_pause_successful(pipeline):
     response = pipeline.pause('Time to sleep')
 
     assert response.is_ok
-    assert response.content_type == 'text/html'
-    assert response.payload.decode('utf-8') == ' '
+    assert response.content_type == 'application/vnd.go.cd.v1+json'
+    assert response.payload["message"] == f"Pipeline '{pipeline.name}' paused successfully."
 
+@vcr.use_cassette('tests/fixtures/cassettes/api/pipeline/pause-unsuccessful.yml')
+def test_pause_unsuccessful(pipeline):
+    response = pipeline.pause('Time to sleep')
+
+    assert not response.is_ok
+    assert response.content_type == 'application/vnd.go.cd.v1+json'
+    assert response.payload["message"] == f"Failed to pause pipeline '{pipeline.name}'. Pipeline '{pipeline.name}' is already paused."
 
 @vcr.use_cassette('tests/fixtures/cassettes/api/pipeline/unpause-successful.yml')
 def test_unpause(pipeline):
