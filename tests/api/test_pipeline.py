@@ -94,13 +94,21 @@ def test_pause_unsuccessful(pipeline):
     assert response.payload["message"] == f"Failed to pause pipeline '{pipeline.name}'. Pipeline '{pipeline.name}' is already paused."
 
 @vcr.use_cassette('tests/fixtures/cassettes/api/pipeline/unpause-successful.yml')
-def test_unpause(pipeline):
+def test_unpause_successful(pipeline):
     response = pipeline.unpause()
 
     assert response.is_ok
-    assert response.content_type == 'text/html'
-    assert response.payload.decode('utf-8') == ' '
+    assert response.content_type == 'application/vnd.go.cd.v1+json'
+    assert response.payload["message"] == f"Pipeline '{pipeline.name}' unpaused successfully."
 
+@vcr.use_cassette('tests/fixtures/cassettes/api/pipeline/unpause-unsuccessful.yml')
+def test_unpause_unsuccessful(pipeline):
+    response = pipeline.unpause()
+
+    assert not response.is_ok
+    assert response.content_type == 'application/vnd.go.cd.v1+json'
+    assert response.payload["message"] == (f"Failed to unpause pipeline '{pipeline.name}'. "
+                                           f"Pipeline '{pipeline.name}' is already unpaused.")
 
 @vcr.use_cassette('tests/fixtures/cassettes/api/pipeline/status.yml')
 def test_status(pipeline):

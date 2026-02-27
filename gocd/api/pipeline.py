@@ -67,7 +67,7 @@ class Pipeline(Endpoint):
           Response: :class:`gocd.api.response.Response` object
         """
         return self._post('/unlock', headers={
-            "Accept":"application/vnd.go.cd.v1+json","X-GoCD-Confirm": True}, method="POST")
+            "Accept":"application/vnd.go.cd.v1+json","X-GoCD-Confirm": "True"}, method="POST")
 
     #: This is an alias for :meth:`release`
     unlock = release
@@ -100,7 +100,7 @@ class Pipeline(Endpoint):
           Response: :class:`gocd.api.response.Response` object
         """
         return self._post('/unpause', headers={
-            "X-GoCD-Confirm": True,
+            "X-GoCD-Confirm": "True",
             "Accept": "application/vnd.go.cd.v1+json"}, method="POST")
 
     def status(self):
