@@ -91,7 +91,9 @@ def test_pause_unsuccessful(pipeline):
 
     assert not response.is_ok
     assert response.content_type == 'application/vnd.go.cd.v1+json'
-    assert response.payload["message"] == f"Failed to pause pipeline '{pipeline.name}'. Pipeline '{pipeline.name}' is already paused."
+    assert response.payload[
+               "message"] == f"Failed to pause pipeline '{pipeline.name}'. Pipeline '{pipeline.name}' is already paused."
+
 
 @vcr.use_cassette('tests/fixtures/cassettes/api/pipeline/unpause-successful.yml')
 def test_unpause_successful(pipeline):
@@ -110,15 +112,46 @@ def test_unpause_unsuccessful(pipeline):
     assert response.payload["message"] == (f"Failed to unpause pipeline '{pipeline.name}'. "
                                            f"Pipeline '{pipeline.name}' is already unpaused.")
 
-@vcr.use_cassette('tests/fixtures/cassettes/api/pipeline/status.yml')
-def test_status(pipeline):
+
+@vcr.use_cassette('tests/fixtures/cassettes/api/pipeline/status_when_schedulable.yml')
+def test_status_when_schedulable(pipeline):
     response = pipeline.status()
 
+    payload = response.payload
+
     assert response.is_ok
-    assert response.content_type == 'application/json'
-    assert not response['locked']
-    assert not response['paused']
-    assert response['schedulable']
+    assert response.content_type == 'application/vnd.go.cd.v1+json'
+
+    assert payload['schedulable'] is True
+    assert payload['paused'] is False
+    assert len(payload['paused_cause']) is 0
+    assert payload['locked'] is False
+
+@vcr.use_cassette('tests/fixtures/cassettes/api/pipeline/status_when_paused.yml')
+def test_status_when_paused(pipeline):
+    response = pipeline.status()
+
+    payload = response.payload
+
+    assert response.is_ok
+    assert response.content_type == 'application/vnd.go.cd.v1+json'
+
+    assert payload['paused'] is True
+    assert len(payload['paused_cause']) > 0
+    assert payload['schedulable'] is False
+    assert payload['locked'] is False
+
+# Todo: add for this case
+# @vcr.use_cassette('tests/fixtures/cassettes/api/pipeline/status_when_locked',
+#                   record_mode="new_episodes")
+# def test_status_when_locked(pipeline):
+#     response = pipeline.status()
+#
+#     assert response.is_ok
+    # assert response.content_type == 'application/json'
+    # assert not response['locked']
+    # assert not response['paused']
+    # assert response['schedulable']
 
 
 @vcr.use_cassette('tests/fixtures/cassettes/api/pipeline/instance.yml')
