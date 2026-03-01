@@ -239,12 +239,10 @@ def test_schedule_when_pipeline_is_already_running(pipeline):
 
     assert response.status_code == 409
     assert not response.is_ok
-    assert response.content_type == 'text/html'
-    assert response.payload.decode('utf-8') == (
-        'Failed to trigger pipeline [{pipeline}] {{ Stage [Hello] in '
-        'pipeline [{pipeline}] is still in progress }}\n'
-    ).format(pipeline=pipeline.name)
-
+    assert response.content_type == "application/vnd.go.cd.v1+json"
+    assert response.payload["message"] == (f"Failed to trigger pipeline [{pipeline.name}]"
+                                           " { Stage [up42_stage]"
+                                           " in pipeline [up42] is still in progress }")
 
 @vcr.use_cassette(
     'tests/fixtures/cassettes/api/pipeline/schedule-successful-and-return-new-instance.yml'
