@@ -11,7 +11,7 @@ interactions:
       authorization:
       - Basic YWRtaW46YmFkZ2Vy
     method: POST
-    uri: http://localhost:8080/go/api/pipelines/up42/pause
+    uri: http://localhost:8153/go/api/pipelines/up42/pause
   response:
     body:
       string: "{\n  \"message\" : \"Failed to pause pipeline 'up42'. Pipeline 'up42'
