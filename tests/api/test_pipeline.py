@@ -7,7 +7,7 @@ import gocd.api
 
 @pytest.fixture
 def server():
-    return gocd.Server('http://localhost:8080', user='admin', password='badger')
+    return gocd.Server('http://localhost:8153', user='admin', password='badger')
 
 
 @pytest.fixture
