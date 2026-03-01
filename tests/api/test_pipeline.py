@@ -76,14 +76,10 @@ def test_release_when_pipeline_is_running(locked_pipeline):
 def test_release_when_pipeline_is_unlocked(locked_pipeline):
     response = locked_pipeline.release()
 
-    assert not response
     assert not response.is_ok
-    assert response.content_type == 'text/html'
-    assert response.payload.decode('utf-8') == (
-        'lock exists within the pipeline configuration but no pipeline '
-        'instance is currently in progress\n'
-    )
-
+    assert response.content_type == "application/vnd.go.cd.v1+json"
+    assert response.payload["message"] == ("Lock exists within the pipeline configuration but no "
+                                           "pipeline instance is currently in progress")
 
 @vcr.use_cassette('tests/fixtures/cassettes/api/pipeline/pause-successful.yml')
 def test_pause_successful(pipeline):
