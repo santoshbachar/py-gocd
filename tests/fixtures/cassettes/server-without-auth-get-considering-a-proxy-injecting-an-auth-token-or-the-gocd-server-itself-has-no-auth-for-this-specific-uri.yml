@@ -1,0 +1,41 @@
+interactions:
+- request:
+    body: null
+    headers:
+      User-Agent:
+      - py-gocd
+      authorization:
+      - Basic YmE6c2VjcmV0
+    method: GET
+    uri: http://localhost:8153/go/api/pipelines/Simple/history/0
+  response:
+    body:
+      string: "{\n  \"message\": \"Invalid credentials. Either your username and password
+        are incorrect, or there is a problem with your browser cookies. Please check
+        with your administrator.\"\n}"
+    headers:
+      Content-Length:
+      - '175'
+      Content-Type:
+      - application/json
+      Date:
+      - Sun, 01 Mar 2026 05:37:39 GMT
+      Expires:
+      - Thu, 01 Jan 1970 00:00:00 GMT
+      Set-Cookie:
+      - JSESSIONID=node01pubd68rrcfx016gcayo1rerp672.node0; Path=/go; Expires=Sun,
+        15-Mar-2026 05:37:39 GMT; Max-Age=1209600; HttpOnly
+      WWW-Authenticate:
+      - Basic realm="GoCD"
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-UA-Compatible:
+      - chrome=1
+      X-XSS-Protection:
+      - 1; mode=block
+    status:
+      code: 401
+      message: Unauthorized
+version: 1
