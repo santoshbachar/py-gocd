@@ -63,6 +63,14 @@ def test_release(locked_pipeline):
         locked_pipeline.name
     )
 
+@vcr.use_cassette('tests/fixtures/cassettes/api/pipeline/release-when-pipeline-is-running.yml')
+def test_release_when_pipeline_is_running(locked_pipeline):
+    response = locked_pipeline.release()
+
+    assert not response.is_ok
+    assert response.content_type == "application/vnd.go.cd.v1+json"
+    assert response.payload["message"] == ("Locked pipeline instance is currently running (one of "
+                                           "the stages is in progress)")
 
 @vcr.use_cassette('tests/fixtures/cassettes/api/pipeline/release-unsuccessful.yml')
 def test_release_when_pipeline_is_unlocked(locked_pipeline):
