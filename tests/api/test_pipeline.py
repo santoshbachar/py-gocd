@@ -182,11 +182,8 @@ def test_schedule(pipeline):
 
     assert response.status_code == 202
     assert response.is_ok
-    assert response.content_type == 'text/html'
-    assert response.payload.decode('utf-8') == (
-        u'Request to schedule pipeline {0} accepted\n'.format(pipeline.name)
-    )
-
+    assert response.content_type == 'application/vnd.go.cd.v1+json'
+    assert response.payload["message"] == f"Request to schedule pipeline {pipeline.name} accepted"
 
 @vcr.use_cassette('tests/fixtures/cassettes/api/pipeline/schedule-successful-with-material.yml')
 def test_schedule_with_git_arg(pipeline):
