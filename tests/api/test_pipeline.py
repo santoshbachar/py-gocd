@@ -167,14 +167,14 @@ def test_instance(pipeline):
     assert response['name'] == pipeline.name
     assert response['counter'] == 23
 
-@vcr.use_cassette('tests/fixtures/cassettes/api/pipeline/instance-return-latest.yml')
+@vcr.use_cassette('tests/fixtures/cassettes/api/pipeline/instance-zero-pipeline-counter.yml')
 def test_instance_without_argument_returns_latest(pipeline):
-    history_instance = pipeline.history()['pipelines'][0]
     response = pipeline.instance()
 
-    assert response.is_ok
-    assert response['counter'] == history_instance['counter']
-
+    assert not response.is_ok
+    assert response.content_type == 'application/vnd.go.cd.v1+json'
+    assert response.payload["message"] == ("Your request could not be processed. The pipeline "
+                                           "counter cannot be less than 1.")
 
 @vcr.use_cassette('tests/fixtures/cassettes/api/pipeline/schedule-successful-no-args.yml')
 def test_schedule(pipeline):
