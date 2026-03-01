@@ -117,28 +117,24 @@ class Pipeline(Endpoint):
             "Accept": "application/vnd.go.cd.v1+json"
         })
 
-    def instance(self, counter=None):
+    def instance(self, pipeline_counter=0):
         """Returns all the information regarding a specific pipeline run
 
         See the `Go pipeline instance documentation`__ for examples.
 
-        .. __: http://api.go.cd/current/#get-pipeline-instance
+        .. __: https://api.gocd.org/26.1.0/#get-pipeline-instance
 
         Args:
-          counter (int): The pipeline instance to fetch.
+          pipeline_counter (int): The pipeline instance to fetch.
             If falsey returns the latest pipeline instance from :meth:`history`.
 
         Returns:
           Response: :class:`gocd.api.response.Response` object
         """
-        if not counter:
-            history = self.history()
-            if not history:
-                return history
-            else:
-                return Response._from_json(history['pipelines'][0])
 
-        return self._get('/instance/{counter:d}'.format(counter=counter))
+        return self._get('/{counter:d}'.format(counter=pipeline_counter), headers={
+            "Accept": "application/vnd.go.cd.v1+json"
+        })
 
     def schedule(self, variables=None, secure_variables=None, materials=None,
                  return_new_instance=False, backoff_time=1.0):

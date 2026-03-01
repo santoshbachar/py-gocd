@@ -160,13 +160,12 @@ def test_status_when_paused(pipeline):
 
 @vcr.use_cassette('tests/fixtures/cassettes/api/pipeline/instance.yml')
 def test_instance(pipeline):
-    response = pipeline.instance(1)
+    response = pipeline.instance(23)
 
     assert response.is_ok
-    assert response.content_type == 'application/json'
+    assert response.content_type == 'application/vnd.go.cd.v1+json'
     assert response['name'] == pipeline.name
-    assert response['counter'] == 1
-
+    assert response['counter'] == 23
 
 @vcr.use_cassette('tests/fixtures/cassettes/api/pipeline/instance-return-latest.yml')
 def test_instance_without_argument_returns_latest(pipeline):
