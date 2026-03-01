@@ -11,7 +11,7 @@ interactions:
       authorization:
       - Basic YWRtaW46YmFkZ2Vy
     method: POST
-    uri: http://localhost:8080/go/api/pipelines/up42/unpause
+    uri: http://localhost:8153/go/api/pipelines/up42/unpause
   response:
     body:
       string: "{\n  \"message\" : \"Pipeline 'up42' unpaused successfully.\"\n}"
