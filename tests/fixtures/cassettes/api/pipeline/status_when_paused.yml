@@ -9,7 +9,7 @@ interactions:
       authorization:
       - Basic YWRtaW46YmFkZ2Vy
     method: GET
-    uri: http://localhost:8080/go/api/pipelines/up42/status
+    uri: http://localhost:8153/go/api/pipelines/up42/status
   response:
     body:
       string: "{\n  \"paused\" : true,\n  \"paused_cause\" : \"paused to test status\",\n
