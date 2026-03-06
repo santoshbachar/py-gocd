@@ -149,6 +149,13 @@ def test_status_when_locked(pipeline):
 
     payload = response.payload
 
+    assert response.is_ok
+    assert response.content_type == 'application/vnd.go.cd.v1+json'
+
+    assert payload['locked'] is True
+    assert payload['paused'] is False
+    assert len(payload['paused_cause']) is 0
+    assert payload['schedulable'] is False
 
 @vcr.use_cassette('tests/fixtures/cassettes/api/pipeline/instance.yml')
 def test_instance(pipeline):
