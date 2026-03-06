@@ -237,6 +237,7 @@ class Pipeline(Endpoint):
 
     # TODO: It would be nice if this could stream the output as it happens.
     # Currently it's built with the assumption that this is done after all output has finished.
+    # WARNING: The changes in the new instance() broke this function
     def console_output(self, instance=None):
         """Yields the output and metadata from all jobs in the pipeline
 

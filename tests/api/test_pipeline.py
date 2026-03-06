@@ -22,7 +22,7 @@ def locked_pipeline(server):
 
 @pytest.fixture
 def pipeline_multiple_stages(server):
-    return server.pipeline('Multiple-Stages-And-Jobs')
+    return server.pipeline('up42')
 
 
 @pytest.fixture
@@ -257,20 +257,18 @@ def test_schedule_pipeline_and_return_new_instance(pipeline):
     assert (before_run['counter'] + 1) == response['counter']
 
 
-@vcr.use_cassette(
-    'tests/fixtures/cassettes/api/pipeline/console-output.yml'
-)
+@vcr.use_cassette('tests/fixtures/cassettes/api/pipeline/console-output.yml')
 def test_console_output_single_stage(pipeline):
-    instance = pipeline.instance()
+    instance = pipeline.instance(40)
     metadata, output = next(pipeline.console_output(instance))
 
     assert r'[go] Job completed' in output.decode('utf8')
-    assert {'pipeline': 'Simple',
+    assert {'pipeline': 'up42',
             'pipeline_counter': instance['counter'],
-            'stage': 'defaultStage',
+            'stage': 'up42_stage',
             'stage_counter': '1',
-            'job': 'defaultJob',
-            'job_result': 'Passed',
+            'job': 'up42_job',
+            'job_result': 'Failed',
             } == metadata
 
 
