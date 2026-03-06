@@ -124,9 +124,6 @@ def test_edit_error(server, scm_object):
     etag = '"483ba431cc141323e3c7c00c944d4878"'
     response = gocd.api.PluggableSCM(server, scm_object["name"]).edit(scm_object, etag)
 
-    # exclude for comparison
-    response_dict = response.payload
-
     assert not response.is_ok
     assert response.content_type == 'application/vnd.go.cd.v1+json'
     assert response.body["message"] == "You are not authorized to access this resource!"
