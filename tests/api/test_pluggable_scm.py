@@ -64,6 +64,14 @@ def test_get_found(server):
     assert response["name"] == name
     assert isinstance(response["configuration"], list)
 
+@vcr.use_cassette('tests/fixtures/cassettes/api/pluggable_scm/get-found-error.yml')
+def test_get_found_error(server):
+    name = "SCM-NAME"
+    response = gocd.api.PluggableSCM(server, name).get()
+
+    assert not response.is_ok
+    assert response.content_type == 'application/vnd.go.cd.v1+json'
+    assert response.body["message"] == "You are not authorized to access this resource!"
 
 @vcr.use_cassette('tests/fixtures/cassettes/api/pluggable_scm/get-not-found.yml')
 def test_get_not_found(server):
