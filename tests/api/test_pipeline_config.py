@@ -82,8 +82,7 @@ def pipeline_json():
     }
 
 
-@vcr.use_cassette('tests/fixtures/cassettes/api/pipeline-config/get-successful.yml',
-                  record_mode='new_episodes')
+@vcr.use_cassette('tests/fixtures/cassettes/api/pipeline-config/get-successful.yml')
 def test_get_existing(server, pipeline_json):
     api_config = gocd.api.PipelineConfig(server, "PyGoCd")
 
