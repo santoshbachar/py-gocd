@@ -58,10 +58,9 @@ def test_release(locked_pipeline):
     response = locked_pipeline.release()
 
     assert response.is_ok
-    assert response.content_type == 'text/html'
-    assert response.payload.decode('utf-8') == 'pipeline lock released for {0}\n'.format(
-        locked_pipeline.name
-    )
+    assert response.content_type == "application/vnd.go.cd.v1+json"
+    assert response.payload["message"] == f"Pipeline lock released for {locked_pipeline.name}"
+
 
 @vcr.use_cassette('tests/fixtures/cassettes/api/pipeline/release-when-pipeline-is-running.yml')
 def test_release_when_pipeline_is_running(locked_pipeline):
