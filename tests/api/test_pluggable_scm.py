@@ -7,7 +7,7 @@ import gocd.api
 
 @pytest.fixture
 def server():
-    return gocd.Server('http://localhost:8153', user='bot', password='12345678')
+    return gocd.Server('http://localhost:8153', user='admin', password='badger')
 
 
 @pytest.fixture
@@ -45,6 +45,13 @@ def test_list(server):
     assert response.content_type == 'application/vnd.go.cd.v1+json'
     assert isinstance(response["_embedded"]["scms"], list)
 
+@vcr.use_cassette('tests/fixtures/cassettes/api/pluggable_scm/list-error.yml')
+def test_list_error(server):
+    response = gocd.api.PluggableSCM(server).list()
+
+    assert not response.is_ok
+    assert response.content_type == 'application/vnd.go.cd.v1+json'
+    assert response.body["message"] == "You are not authorized to access this resource!"
 
 @vcr.use_cassette('tests/fixtures/cassettes/api/pluggable_scm/get-found.yml')
 def test_get_found(server):
