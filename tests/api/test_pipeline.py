@@ -52,8 +52,7 @@ def test_history(pipeline, cassette_name, page_size, expected_counter):
     assert run['counter'] == expected_counter
 
 
-@vcr.use_cassette('tests/fixtures/cassettes/api/pipeline/release-successful.yml',
-                  record_mode='new_episodes')
+@vcr.use_cassette('tests/fixtures/cassettes/api/pipeline/release-successful.yml')
 def test_release(locked_pipeline):
     response = locked_pipeline.release()
 
