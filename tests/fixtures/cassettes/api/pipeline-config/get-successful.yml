@@ -2,39 +2,56 @@ interactions:
 - request:
     body: null
     headers:
-      Accept: [application/vnd.go.cd.v1+json]
-      Connection: [close]
-      Host: ['192.168.99.100:8153']
-      User-Agent: [py-gocd]
+      Accept:
+      - application/vnd.go.cd.v1+json
+      Connection:
+      - close
+      Host:
+      - 192.168.99.100:8153
+      User-Agent:
+      - py-gocd
     method: GET
     uri: http://192.168.99.100:8153/go/api/admin/pipelines/PyGoCd
   response:
-    body: {string: !!python/unicode "{\n  \"message\": \"You are not authorized to
-        access this resource!\"\n}\n"}
+    body:
+      string: "{\n  \"message\": \"You are not authorized to access this resource!\"\n}\n"
     headers:
-      connection: [close]
-      content-type: [application/vnd.go.cd.v1+json]
-      date: ['Tue, 03 May 2016 20:45:03 GMT']
-      expires: ['Thu, 01 Jan 1970 00:00:00 GMT']
-      set-cookie: ['JSESSIONID=ns41r4cyxzod1nisgsy6uzbng;Path=/go;Expires=Tue, 17-May-2016
-          20:45:03 GMT']
-      www-authenticate: [Basic realm="GoCD"]
-    status: {code: 401, message: Unauthorized}
+      connection:
+      - close
+      content-type:
+      - application/vnd.go.cd.v1+json
+      date:
+      - Tue, 03 May 2016 20:45:03 GMT
+      expires:
+      - Thu, 01 Jan 1970 00:00:00 GMT
+      set-cookie:
+      - JSESSIONID=ns41r4cyxzod1nisgsy6uzbng;Path=/go;Expires=Tue, 17-May-2016 20:45:03
+        GMT
+      www-authenticate:
+      - Basic realm="GoCD"
+    status:
+      code: 401
+      message: Unauthorized
 - request:
     body: null
     headers:
-      Accept: [application/vnd.go.cd.v1+json]
-      Authorization: [Basic Ym90OjEyMzQ1Njc4]
-      Connection: [close]
-      Host: ['192.168.99.100:8153']
-      User-Agent: [py-gocd]
+      Accept:
+      - application/vnd.go.cd.v1+json
+      Authorization:
+      - Basic Ym90OjEyMzQ1Njc4
+      Connection:
+      - close
+      Host:
+      - 192.168.99.100:8153
+      User-Agent:
+      - py-gocd
     method: GET
     uri: http://192.168.99.100:8153/go/api/admin/pipelines/PyGoCd
   response:
-    body: {string: !!python/unicode "{\n  \"_links\": {\n    \"self\": {\n      \"href\":
-        \"https://live.dev/go/api/admin/pipelines/PyGoCd\"\n    },\n    \"doc\": {\n
-        \     \"href\": \"http://api.go.cd/#pipeline_config\"\n    },\n    \"find\":
-        {\n      \"href\": \"https://live.dev/go/api/admin/pipelines/:pipeline_name\"\n
+    body:
+      string: "{\n  \"_links\": {\n    \"self\": {\n      \"href\": \"https://live.dev/go/api/admin/pipelines/PyGoCd\"\n
+        \   },\n    \"doc\": {\n      \"href\": \"http://api.go.cd/#pipeline_config\"\n
+        \   },\n    \"find\": {\n      \"href\": \"https://live.dev/go/api/admin/pipelines/:pipeline_name\"\n
         \   }\n  },\n  \"label_template\": \"${COUNT}\",\n  \"enable_pipeline_locking\":
         false,\n  \"name\": \"PyGoCd\",\n  \"template\": null,\n  \"parameters\":
         [\n\n  ],\n  \"environment_variables\": [\n\n  ],\n  \"materials\": [\n    {\n
@@ -57,22 +74,79 @@ interactions:
         null\n              }\n            }\n          ],\n          \"tabs\": [\n\n
         \         ],\n          \"artifacts\": [\n\n          ],\n          \"properties\":
         null\n        }\n      ]\n    }\n  ],\n  \"tracking_tool\": null,\n  \"timer\":
-        null\n}\n"}
+        null\n}\n"
     headers:
-      cache-control: ['max-age=0, private, must-revalidate']
-      connection: [close]
-      content-type: [application/vnd.go.cd.v1+json; charset=utf-8]
-      date: ['Tue, 03 May 2016 20:45:03 GMT']
-      etag: ['"6b60a77d27312e3a21bfd59163db1e48"']
-      expires: ['Thu, 01 Jan 1970 00:00:00 GMT']
-      set-cookie: ['JSESSIONID=zsrfc5u2eoqex0ggawozx31w;Path=/go;Expires=Tue, 17-May-2016
-          20:45:03 GMT']
-      vary: ['Accept-Encoding, User-Agent']
-      x-content-type-options: [nosniff]
-      x-frame-options: [SAMEORIGIN]
-      x-request-id: [ceeb35d8-ec19-43a5-bab4-74da7d3741c5]
-      x-runtime: ['0.048000']
-      x-ua-compatible: [chrome=1]
-      x-xss-protection: [1; mode=block]
-    status: {code: 200, message: OK}
+      cache-control:
+      - max-age=0, private, must-revalidate
+      connection:
+      - close
+      content-type:
+      - application/vnd.go.cd.v1+json; charset=utf-8
+      date:
+      - Tue, 03 May 2016 20:45:03 GMT
+      etag:
+      - '"6b60a77d27312e3a21bfd59163db1e48"'
+      expires:
+      - Thu, 01 Jan 1970 00:00:00 GMT
+      set-cookie:
+      - JSESSIONID=zsrfc5u2eoqex0ggawozx31w;Path=/go;Expires=Tue, 17-May-2016 20:45:03
+        GMT
+      vary:
+      - Accept-Encoding, User-Agent
+      x-content-type-options:
+      - nosniff
+      x-frame-options:
+      - SAMEORIGIN
+      x-request-id:
+      - ceeb35d8-ec19-43a5-bab4-74da7d3741c5
+      x-runtime:
+      - '0.048000'
+      x-ua-compatible:
+      - chrome=1
+      x-xss-protection:
+      - 1; mode=block
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - application/vnd.go.cd.v4+json
+      User-Agent:
+      - py-gocd
+      authorization:
+      - Basic YWRtaW46YmFkZ2Vy
+    method: GET
+    uri: http://localhost:8153/go/api/admin/pipelines/PyGoCd
+  response:
+    body:
+      string: <html><body><h2>404 Not found</h2></body></html>
+    headers:
+      Cache-Control:
+      - max-age=0, private, must-revalidate
+      Content-Type:
+      - text/html;charset=utf-8
+      Date:
+      - Fri, 06 Mar 2026 13:24:39 GMT
+      Expires:
+      - Thu, 01 Jan 1970 00:00:00 GMT
+      Set-Cookie:
+      - JSESSIONID=node014tt631m5v4yf1xj54rpy0s9i649.node0; Path=/go; Expires=Fri,
+        20-Mar-2026 13:24:39 GMT; Max-Age=1209600; HttpOnly
+      Transfer-Encoding:
+      - chunked
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-Runtime:
+      - '0'
+      X-UA-Compatible:
+      - chrome=1
+      X-XSS-Protection:
+      - 1; mode=block
+    status:
+      code: 404
+      message: Not Found
 version: 1

@@ -147,3 +147,14 @@ def test_create_error(server, pipeline_json):
     response = api_config.create(pipeline_json)
 
     assert not response.is_ok
+    assert response.body["message"] == "You are not authorized to access this resource!"
+
+@vcr.use_cassette('tests/fixtures/cassettes/api/pipeline-config/create-pipeline-error.yml')
+def test_create_error(server, pipeline_json):
+    api_config = gocd.api.PipelineConfig(server, "PyGoCd")
+    pipeline_json["group"] = "Tools"
+
+    response = api_config.create(pipeline_json)
+
+    assert not response.is_ok
+    assert response.body["message"] == "Failed to create pipeline 'PyGoCd' as another pipeline by the same name already exists."
