@@ -27,7 +27,7 @@ def pipeline_multiple_stages(server):
 
 @pytest.fixture
 def pipeline_multiple_stages_manual(server):
-    return server.pipeline('Multiple-Stages-And-Jobs-Manual')
+    return server.pipeline('up42')
 
 
 @pytest.mark.parametrize('cassette_name,page_size,expected_counter', [
@@ -288,9 +288,7 @@ def test_console_output_multiple_stages(pipeline_multiple_stages):
 
     # assert valid == 3
 
-@vcr.use_cassette(
-    'tests/fixtures/cassettes/api/pipeline/console-output-job-not-finished.yml'
-)
+@vcr.use_cassette('tests/fixtures/cassettes/api/pipeline/console-output-job-not-finished.yml')
 def test_console_output_only_where_stage_has_finished(pipeline_multiple_stages_manual):
     # The second stage has been scheduled but has no agent to run on, so the only output in
     # the console.log is that there's no console.log To avoid showing that message it'll only
@@ -298,13 +296,13 @@ def test_console_output_only_where_stage_has_finished(pipeline_multiple_stages_m
     pipeline = pipeline_multiple_stages_manual
 
     jobs_with_output = set()
-    for metadata, output in pipeline.console_output():
+    for metadata, output in pipeline.console_output(pipeline.instance(40)):
         if output:
             jobs_with_output.add(metadata['job'])
 
     assert 'Ehlo' not in jobs_with_output
-    assert 'Hello' in jobs_with_output
-    assert 'Bye' in jobs_with_output
+    assert 'up42_job' in jobs_with_output
+    assert 'up42_job' in jobs_with_output
 
 
 @vcr.use_cassette(
