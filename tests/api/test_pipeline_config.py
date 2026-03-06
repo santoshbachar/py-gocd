@@ -8,7 +8,7 @@ import gocd.api
 
 @pytest.fixture
 def server():
-    return gocd.Server('http://192.168.99.100:8153', user='bot', password='12345678')
+    return gocd.Server('http://localhost:8153', user='admin', password='badger')
 
 
 @pytest.fixture
@@ -82,7 +82,8 @@ def pipeline_json():
     }
 
 
-@vcr.use_cassette('tests/fixtures/cassettes/api/pipeline-config/get-successful.yml')
+@vcr.use_cassette('tests/fixtures/cassettes/api/pipeline-config/get-successful.yml',
+                  record_mode='new_episodes')
 def test_get_existing(server, pipeline_json):
     api_config = gocd.api.PipelineConfig(server, "PyGoCd")
 
