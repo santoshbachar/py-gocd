@@ -189,12 +189,23 @@ class Pipeline(Endpoint):
                 return response
 
             max_tries = 10
+
+            # I couldn't understand the logic, so I wrote it by myself
+            #
+            # while max_tries > 0:
+            #     current = self.instance()
+            #     if not last_run and current:
+            #         return current
+            #     elif last_run and current['counter'] > last_run:
+            #         return current
+            #     else:
+            #         time.sleep(backoff_time)
+            #         max_tries -= 1
+
             while max_tries > 0:
-                current = self.instance()
-                if not last_run and current:
-                    return current
-                elif last_run and current['counter'] > last_run:
-                    return current
+                current_pipeline = self.history()['pipelines'][0]
+                if current_pipeline['counter'] > last_run:
+                    return self.instance(current_pipeline['counter'])
                 else:
                     time.sleep(backoff_time)
                     max_tries -= 1

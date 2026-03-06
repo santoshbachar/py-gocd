@@ -51,7 +51,6 @@ def test_history(pipeline, cassette_name, page_size, expected_counter):
     assert run['name'] == 'up42'
     assert run['counter'] == expected_counter
 
-
 @vcr.use_cassette('tests/fixtures/cassettes/api/pipeline/release-successful.yml')
 def test_release(locked_pipeline):
     response = locked_pipeline.release()
@@ -59,7 +58,6 @@ def test_release(locked_pipeline):
     assert response.is_ok
     assert response.content_type == "application/vnd.go.cd.v1+json"
     assert response.payload["message"] == f"Pipeline lock released for {locked_pipeline.name}"
-
 
 @vcr.use_cassette('tests/fixtures/cassettes/api/pipeline/release-when-pipeline-is-running.yml')
 def test_release_when_pipeline_is_running(locked_pipeline):
@@ -251,10 +249,11 @@ def test_schedule_pipeline_and_return_new_instance(pipeline):
     # By setting the backoff to 0 the test runs faster, since it's all mocked out anyway.
     response = pipeline.schedule(return_new_instance=True, backoff_time=0)
 
-    assert response.status_code == 200
     assert response.is_ok
-    assert response.content_type == 'application/json'
-    assert response['counter'] != before_run['counter']
+    assert response.status_code == 200
+    assert response.content_type == 'application/vnd.go.cd.v1+json'
+    assert before_run['counter'] == 39
+    assert response.payload['counter'] != before_run['counter']
     assert (before_run['counter'] + 1) == response['counter']
 
 
