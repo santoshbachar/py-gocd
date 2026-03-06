@@ -184,7 +184,7 @@ class Pipeline(Endpoint):
                 last_run = None
             else:
                 last_run = pipelines[0]['counter']
-            response = self._post('/schedule', ok_status=202, **scheduling_args)
+            response = self._post('/schedule', ok_status=202, method="POST", **scheduling_args)
             if not response:
                 return response
 
