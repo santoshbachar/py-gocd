@@ -119,6 +119,17 @@ def test_edit_success(server, scm_object):
     assert response.content_type == 'application/vnd.go.cd.v1+json'
     assert scm_object == response_dict
 
+@vcr.use_cassette('tests/fixtures/cassettes/api/pluggable_scm/edit-success-error.yml')
+def test_edit_error(server, scm_object):
+    etag = '"483ba431cc141323e3c7c00c944d4878"'
+    response = gocd.api.PluggableSCM(server, scm_object["name"]).edit(scm_object, etag)
+
+    # exclude for comparison
+    response_dict = response.payload
+
+    assert not response.is_ok
+    assert response.content_type == 'application/vnd.go.cd.v1+json'
+    assert response.body["message"] == "You are not authorized to access this resource!"
 
 @vcr.use_cassette('tests/fixtures/cassettes/api/pluggable_scm/edit-fail.yml')
 def test_edit_fail(server, scm_object):
