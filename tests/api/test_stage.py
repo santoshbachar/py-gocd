@@ -103,6 +103,7 @@ def test_cancel_success(stage):
     response = stage.cancel(2)
 
     assert response.is_ok
+    assert response.status_code == 200
     assert response["message"] == 'Stage cancelled successfully.'
 
 
@@ -122,4 +123,5 @@ def test_cancel_ignore(stage):
     response = stage.cancel(1)
 
     assert response.is_ok
+    assert response.status_code == 200
     assert response["message"] == 'Stage is not active. Cancellation Ignored.'
