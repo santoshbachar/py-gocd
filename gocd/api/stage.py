@@ -12,8 +12,7 @@ class Stage(Endpoint):
     class PathAssist(Enum):
         INSTANCE = 'instance'
         HISTORY = 'history'
-
-    path_assist_for_list = ('INSTANCE', 'HISTORY')
+        CANCEL = 'cancel'
 
     def __init__(self, server, pipeline_name, stage_name, pipeline_counter=None,
         stage_counter=None):
@@ -48,7 +47,7 @@ class Stage(Endpoint):
                             'name')
 
         match self.get_path_for:
-            case self.PathAssist.INSTANCE:
+            case self.PathAssist.INSTANCE | self.PathAssist.CANCEL:
                 return "{pipeline_name}/{pipeline_counter}/{stage_name}".format(
                     pipeline_name=self.pipeline_name,
                     pipeline_counter=self.pipeline_counter,
@@ -101,6 +100,11 @@ class Stage(Endpoint):
 
         if type(stage_counter) is not int:
             raise Exception('Stage counter must be an integer')
+
+        # We need it specifically for test_cancel_error
+        self.stage_counter = stage_counter
+
+        self.get_path_for = self.PathAssist.CANCEL
 
         path = f'/{stage_counter}/cancel'
 

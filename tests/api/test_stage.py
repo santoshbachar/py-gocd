@@ -87,12 +87,24 @@ def test_get_latest_stage(server):
     assert response['counter'] == 1
 
 
-@vcr.use_cassette('tests/fixtures/cassettes/api/stage/cancel.yml')
-def test_cancel(stage):
-    response = stage.cancel()
+@vcr.use_cassette('tests/fixtures/cassettes/api/stage/cancel-success.yml')
+def test_cancel_success(stage):
+    response = stage.cancel(2)
 
     assert response.is_ok
-    assert response.body.decode('utf-8').strip() == 'Stage cancelled successfully.'
+    assert response["message"] == 'Stage cancelled successfully.'
+
+
+@vcr.use_cassette('tests/fixtures/cassettes/api/stage/cancel-error.yml')
+def test_cancel_error(stage):
+    response = stage.cancel(10)
+
+    assert not response.is_ok
+    assert response.status_code == 404
+    assert response["message"] == (f"Not Found {{ Stage '{stage.stage_name}' with"
+                                   f" counter '{stage.stage_counter}' not found. Please make sure"
+                                   f" specified stage or stage run with specified counter exists. }}")
+
 
 @vcr.use_cassette('tests/fixtures/cassettes/api/stage/cancel-ignore.yml')
 def test_cancel_ignore(stage):
