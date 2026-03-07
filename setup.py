@@ -30,12 +30,6 @@ def version():
     return version.PY_GOCD_VERSION
 
 extra_dependencies = []
-if sys.version_info < (2, 7):
-    extra_dependencies = [
-        'mock==1.0.1',
-        'contextlib2',
-        'backport_collections',
-    ]
 
 README = open(os.path.join(os.path.dirname(__file__), 'README.rst')).read()
 
