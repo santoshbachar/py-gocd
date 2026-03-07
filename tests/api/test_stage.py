@@ -93,3 +93,10 @@ def test_cancel(stage):
 
     assert response.is_ok
     assert response.body.decode('utf-8').strip() == 'Stage cancelled successfully.'
+
+@vcr.use_cassette('tests/fixtures/cassettes/api/stage/cancel-ignore.yml')
+def test_cancel_ignore(stage):
+    response = stage.cancel(1)
+
+    assert response.is_ok
+    assert response["message"] == 'Stage is not active. Cancellation Ignored.'
