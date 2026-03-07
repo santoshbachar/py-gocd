@@ -101,7 +101,8 @@ test_series() {
         exit 1
     }
 
-    echo "All tests passed successfully!"
+    echo "✅ All tests passed successfully!"
+    echo "⚠️ Check and run test.py to verify integration"
 }
 
 test_series
