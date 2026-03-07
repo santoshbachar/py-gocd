@@ -26,7 +26,7 @@ class Pipeline(Endpoint):
         self.server = server
         self.name = name
 
-    def history(self, offset=0):
+    def history(self, page_size=0, after=None, before=None):
         """Lists previous instances/runs of the pipeline
 
         See the `Go pipeline history documentation`__ for example responses.
@@ -34,12 +34,26 @@ class Pipeline(Endpoint):
         .. __: http://api.go.cd/current/#get-pipeline-history
 
         Args:
-          offset (int, optional): How many instances to skip for this response.
+          page_size (int, optional): The number of records per page. Can be between 10 and 100. Defaults to 10.
+          after (int, optional): The cursor value for fetching the next set of records.
+          before (int, optional): The cursor value for fetching the previous set of records.
 
         Returns:
           Response: :class:`gocd.api.response.Response` object
         """
-        return self._get('/history/{offset:d}'.format(offset=offset or 0))
+
+        ps = page_size or 10
+        parts = [f'page_size={ps}']
+
+        if after is not None:
+            parts.append(f'after={after}')
+        if before is not None:
+            parts.append(f'before={before}')
+
+        query = '&'.join(parts)
+        path = f'/history?{query}'
+
+        return self._get(path, headers={"Accept": "application/vnd.go.cd.v1+json"})
 
     def release(self):
         """Releases a previously locked pipeline
@@ -52,12 +66,13 @@ class Pipeline(Endpoint):
         Returns:
           Response: :class:`gocd.api.response.Response` object
         """
-        return self._post('/releaseLock', headers={"Confirm": "true"})
+        return self._post('/unlock', headers={
+            "Accept":"application/vnd.go.cd.v1+json","X-GoCD-Confirm": "True"}, method="POST")
 
     #: This is an alias for :meth:`release`
     unlock = release
 
-    def pause(self, reason=''):
+    def pause(self, reason='Triggered via API. No reason provided.'):
         """Pauses the current pipeline
 
         See the `Go pipeline pause documentation`__ for example responses.
@@ -70,7 +85,9 @@ class Pipeline(Endpoint):
         Returns:
           Response: :class:`gocd.api.response.Response` object
         """
-        return self._post('/pause', headers={"Confirm": "true"}, pauseCause=reason)
+        return self._post('/pause', headers={
+            "Accept": "application/vnd.go.cd.v1+json",
+            "Content-Type": "application/json"}, pause_cause=reason)
 
     def unpause(self):
         """Unpauses the pipeline
@@ -82,7 +99,9 @@ class Pipeline(Endpoint):
         Returns:
           Response: :class:`gocd.api.response.Response` object
         """
-        return self._post('/unpause', headers={"Confirm": "true"})
+        return self._post('/unpause', headers={
+            "X-GoCD-Confirm": "True",
+            "Accept": "application/vnd.go.cd.v1+json"}, method="POST")
 
     def status(self):
         """Returns the current status of this pipeline
@@ -94,30 +113,28 @@ class Pipeline(Endpoint):
         Returns:
           Response: :class:`gocd.api.response.Response` object
         """
-        return self._get('/status')
+        return self._get('/status', headers={
+            "Accept": "application/vnd.go.cd.v1+json"
+        })
 
-    def instance(self, counter=None):
+    def instance(self, pipeline_counter=0):
         """Returns all the information regarding a specific pipeline run
 
         See the `Go pipeline instance documentation`__ for examples.
 
-        .. __: http://api.go.cd/current/#get-pipeline-instance
+        .. __: https://api.gocd.org/26.1.0/#get-pipeline-instance
 
         Args:
-          counter (int): The pipeline instance to fetch.
+          pipeline_counter (int): The pipeline instance to fetch.
             If falsey returns the latest pipeline instance from :meth:`history`.
 
         Returns:
           Response: :class:`gocd.api.response.Response` object
         """
-        if not counter:
-            history = self.history()
-            if not history:
-                return history
-            else:
-                return Response._from_json(history['pipelines'][0])
 
-        return self._get('/instance/{counter:d}'.format(counter=counter))
+        return self._get('/{counter:d}'.format(counter=pipeline_counter), headers={
+            "Accept": "application/vnd.go.cd.v1+json"
+        })
 
     def schedule(self, variables=None, secure_variables=None, materials=None,
                  return_new_instance=False, backoff_time=1.0):
@@ -150,7 +167,11 @@ class Pipeline(Endpoint):
             variables=variables,
             secure_variables=secure_variables,
             material_fingerprint=materials,
-            headers={"Confirm": "true"},
+            headers={
+                "Accept":"application/vnd.go.cd.v1+json",
+                "Content-Type":"application/json",
+                "X-GoCD-Confirm":"true"
+            },
         )
 
         scheduling_args = dict((k, v) for k, v in scheduling_args.items() if v is not None)
@@ -163,17 +184,28 @@ class Pipeline(Endpoint):
                 last_run = None
             else:
                 last_run = pipelines[0]['counter']
-            response = self._post('/schedule', ok_status=202, **scheduling_args)
+            response = self._post('/schedule', ok_status=202, method="POST", **scheduling_args)
             if not response:
                 return response
 
             max_tries = 10
+
+            # I couldn't understand the logic, so I wrote it by myself
+            #
+            # while max_tries > 0:
+            #     current = self.instance()
+            #     if not last_run and current:
+            #         return current
+            #     elif last_run and current['counter'] > last_run:
+            #         return current
+            #     else:
+            #         time.sleep(backoff_time)
+            #         max_tries -= 1
+
             while max_tries > 0:
-                current = self.instance()
-                if not last_run and current:
-                    return current
-                elif last_run and current['counter'] > last_run:
-                    return current
+                current_pipeline = self.history()['pipelines'][0]
+                if current_pipeline['counter'] > last_run:
+                    return self.instance(current_pipeline['counter'])
                 else:
                     time.sleep(backoff_time)
                     max_tries -= 1
@@ -182,7 +214,7 @@ class Pipeline(Endpoint):
             # better than returning None.
             return response
         else:
-            return self._post('/schedule', ok_status=202, **scheduling_args)
+            return self._post('/schedule', ok_status=202, method="POST", **scheduling_args)
 
     #: This is an alias for :meth:`schedule`
     run = schedule
@@ -205,6 +237,7 @@ class Pipeline(Endpoint):
 
     # TODO: It would be nice if this could stream the output as it happens.
     # Currently it's built with the assumption that this is done after all output has finished.
+    # WARNING: The changes in the new instance() broke this function
     def console_output(self, instance=None):
         """Yields the output and metadata from all jobs in the pipeline
 

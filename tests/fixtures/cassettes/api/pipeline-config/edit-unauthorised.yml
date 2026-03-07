@@ -28,7 +28,7 @@ interactions:
       If-Match: ['"6b60a77d27312e3a21bfd59163db1e48"']
       User-Agent: [py-gocd]
     method: PUT
-    uri: http://192.168.99.100:8153/go/api/admin/pipelines/PyGoCd
+    uri: http://localhost:8153/go/api/admin/pipelines/PyGoCd
   response:
     body: {string: "{\n  \"message\": \"You are not authorized to access this resource!\"\n}\n"}
     headers:

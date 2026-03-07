@@ -27,7 +27,7 @@ interactions:
       Host: ['192.168.99.100:8153']
       User-Agent: [py-gocd]
     method: POST
-    uri: http://192.168.99.100:8153/go/api/admin/pipelines/
+    uri: http://localhost:8153/go/api/admin/pipelines/
   response:
     body: {string: "{\n  \"message\": \"You are not authorized to access this resource!\"\n}\n"}
     headers:

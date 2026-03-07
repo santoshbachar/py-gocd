@@ -1,10 +1,10 @@
 import re
 
+import json
+
 import urllib3
 from urllib3.util import make_headers
 from six.moves.urllib.parse import urljoin
-
-from gocd.vendor.multidimensional_urlencode import urlencoder
 
 from gocd.api import Pipeline, PipelineGroups, Stage
 
@@ -118,7 +118,7 @@ class Server(object):
         method = method or ('POST' if body is not None else 'GET')
 
         # Per-request headers (session cookie + any overrides)
-        req_headers = {}
+        req_headers = self.http.headers.copy()
         if self._session_id:
             req_headers['Cookie'] = self._session_id
         if headers:
@@ -128,6 +128,15 @@ class Server(object):
         injected_data = self._inject_authenticity_token(data, path)
         body = self._encode_data(injected_data)
 
+        # Added by Santosh
+
+        print("🐞 python debug - path is %s" % path)
+        print("🐞 python debug - data is %s" % data)
+        print("🐞 python debug - headers is %s" % headers)
+        print("🐞 python debug - method is %s" % method)
+
+        ###
+
         response = self.http.request(
             method,
             url,
@@ -136,6 +145,8 @@ class Server(object):
             # You can add timeout=urllib3.Timeout(...) here if desired
             # redirect=True is default in urllib3
         )
+
+        print("🐞 python debug - response is %s" % response)
 
         self._set_session_cookie(response)
 
@@ -238,7 +249,7 @@ class Server(object):
 
     def _encode_data(self, data):
         if isinstance(data, dict):
-            return urlencoder.urlencode(data).encode('utf-8')
+            return json.dumps(data, ensure_ascii=False).encode('utf-8')
         elif isinstance(data, str):
             return data.encode('utf-8')
         elif isinstance(data, bytes):
@@ -255,8 +266,8 @@ class Server(object):
         if data is None or not self._authenticity_token or path.startswith('go/api'):
             return data
 
-        if data == '':
-            data = {}
+        # if data == '':
+        #     data = {}
 
         data.update(authenticity_token=self._authenticity_token)
         return data

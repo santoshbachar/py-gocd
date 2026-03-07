@@ -4,42 +4,38 @@ interactions:
     headers:
       Accept:
       - application/vnd.go.cd.v1+json
+      Cookie:
+      - JSESSIONID=node0vnhcom2dfisddf3xxxgjy9py53.node0
       User-Agent:
       - py-gocd
-      X-GoCD-Confirm:
-      - 'True'
       authorization:
       - Basic YWRtaW46YmFkZ2Vy
-    method: POST
-    uri: http://localhost:8153/go/api/pipelines/up42/unlock
+    method: GET
+    uri: http://localhost:8153/go/api/pipelines/up42/0
   response:
     body:
-      string: "{\n  \"message\" : \"Pipeline lock released for up42\"\n}"
+      string: '{"message":"Your request could not be processed. The pipeline counter
+        cannot be less than 1."}'
     headers:
       Cache-Control:
       - max-age=0, private, must-revalidate
       Content-Type:
       - application/vnd.go.cd.v1+json;charset=utf-8
       Date:
-      - Fri, 06 Mar 2026 04:38:30 GMT
-      Expires:
-      - Thu, 01 Jan 1970 00:00:00 GMT
-      Set-Cookie:
-      - JSESSIONID=node012lmrftf5rfgha8mwulyd98wv9.node0; Path=/go; Expires=Fri, 20-Mar-2026
-        04:38:30 GMT; Max-Age=1209600; HttpOnly
+      - Sun, 01 Mar 2026 07:14:12 GMT
       Transfer-Encoding:
       - chunked
-      Vary:
-      - Accept-Encoding
       X-Content-Type-Options:
       - nosniff
       X-Frame-Options:
       - SAMEORIGIN
+      X-Runtime:
+      - '2'
       X-UA-Compatible:
       - chrome=1
       X-XSS-Protection:
       - 1; mode=block
     status:
-      code: 200
-      message: OK
+      code: 422
+      message: Unprocessable Entity
 version: 1

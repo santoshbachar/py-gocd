@@ -28,7 +28,7 @@ interactions:
       Host: ['192.168.99.100:8153']
       User-Agent: [py-gocd]
     method: POST
-    uri: http://192.168.99.100:8153/go/api/admin/pipelines/
+    uri: http://localhost:8153/go/api/admin/pipelines/
   response:
     body: {string: "{\n  \"_links\": {\n    \"self\": {\n      \"href\": \"https://live.dev/go/api/admin/pipelines/PyGoCd-Copy\"\n
         \   },\n    \"doc\": {\n      \"href\": \"http://api.go.cd/#pipeline_config\"\n

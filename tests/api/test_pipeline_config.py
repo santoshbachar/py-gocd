@@ -8,7 +8,7 @@ import gocd.api
 
 @pytest.fixture
 def server():
-    return gocd.Server('http://192.168.99.100:8153', user='bot', password='12345678')
+    return gocd.Server('http://localhost:8153', user='admin', password='badger')
 
 
 @pytest.fixture
@@ -95,7 +95,7 @@ def test_get_existing(server, pipeline_json):
     del response_body["_links"]
     assert response_body == pipeline_json
 
-@vcr.use_cassette('tests/fixtures/cassettes/api/pipeline-config/get-successful-unauthorised.yml')
+@vcr.use_cassette('tests/fixtures/cassettes/api/pipeline-config/get-unauthorised.yml')
 def test_get_existing_unauthorised(server, pipeline_json):
     api_config = gocd.api.PipelineConfig(server, "PyGoCd")
 
@@ -172,7 +172,7 @@ def test_create_successful(server, pipeline_json):
 
     assert response.is_ok
 
-@vcr.use_cassette('tests/fixtures/cassettes/api/pipeline-config/create-successful-unauthorised.yml')
+@vcr.use_cassette('tests/fixtures/cassettes/api/pipeline-config/create-unauthorised.yml')
 def test_create_unauthorised(server, pipeline_json):
     api_config = gocd.api.PipelineConfig(server, "PyGoCd-Copy-UnAuth")
 
@@ -199,3 +199,14 @@ def test_create_error(server, pipeline_json):
     response = api_config.create(pipeline_json)
 
     assert not response.is_ok
+    assert response.body["message"] == "You are not authorized to access this resource!"
+
+@vcr.use_cassette('tests/fixtures/cassettes/api/pipeline-config/create-pipeline-error.yml')
+def test_create_error(server, pipeline_json):
+    api_config = gocd.api.PipelineConfig(server, "PyGoCd")
+    pipeline_json["group"] = "Tools"
+
+    response = api_config.create(pipeline_json)
+
+    assert not response.is_ok
+    assert response.body["message"] == "Failed to create pipeline 'PyGoCd' as another pipeline by the same name already exists."

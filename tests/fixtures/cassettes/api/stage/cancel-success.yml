@@ -3,30 +3,30 @@ interactions:
     body: null
     headers:
       Accept:
-      - application/vnd.go.cd.v1+json
+      - application/vnd.go.cd.v3+json
       User-Agent:
       - py-gocd
       X-GoCD-Confirm:
-      - 'True'
+      - 'true'
       authorization:
       - Basic YWRtaW46YmFkZ2Vy
     method: POST
-    uri: http://localhost:8153/go/api/pipelines/up42/unlock
+    uri: http://localhost:8153/go/api/stages/up42/40/up42_stage/2/cancel
   response:
     body:
-      string: "{\n  \"message\" : \"Pipeline lock released for up42\"\n}"
+      string: "{\n  \"message\" : \"Stage cancelled successfully.\"\n}"
     headers:
       Cache-Control:
       - max-age=0, private, must-revalidate
       Content-Type:
-      - application/vnd.go.cd.v1+json;charset=utf-8
+      - application/vnd.go.cd.v3+json;charset=utf-8
       Date:
-      - Fri, 06 Mar 2026 04:38:30 GMT
+      - Sat, 07 Mar 2026 04:53:32 GMT
       Expires:
       - Thu, 01 Jan 1970 00:00:00 GMT
       Set-Cookie:
-      - JSESSIONID=node012lmrftf5rfgha8mwulyd98wv9.node0; Path=/go; Expires=Fri, 20-Mar-2026
-        04:38:30 GMT; Max-Age=1209600; HttpOnly
+      - JSESSIONID=node0gch3b4wl1ytsrrmg9r5vwnvu35.node0; Path=/go; Expires=Sat, 21-Mar-2026
+        04:53:32 GMT; Max-Age=1209600; HttpOnly
       Transfer-Encoding:
       - chunked
       Vary:

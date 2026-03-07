@@ -8,7 +8,7 @@ interactions:
       Host: ['192.168.99.100:8153']
       User-Agent: [py-gocd]
     method: GET
-    uri: http://192.168.99.100:8153/go/api/admin/pipelines/PyGoCd
+    uri: http://localhost:8153/go/api/admin/pipelines/PyGoCd
   response:
     body: {string: !!python/unicode "{\n  \"_links\": {\n    \"self\": {\n      \"href\":
         \"https://live.dev/go/api/admin/pipelines/PyGoCd\"\n    },\n    \"doc\": {\n

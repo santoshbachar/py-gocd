@@ -6,27 +6,26 @@ interactions:
       - application/vnd.go.cd.v1+json
       User-Agent:
       - py-gocd
-      X-GoCD-Confirm:
-      - 'True'
       authorization:
       - Basic YWRtaW46YmFkZ2Vy
-    method: POST
-    uri: http://localhost:8153/go/api/pipelines/up42/unlock
+    method: GET
+    uri: http://localhost:8153/go/api/pipelines/up42/status
   response:
     body:
-      string: "{\n  \"message\" : \"Pipeline lock released for up42\"\n}"
+      string: "{\n  \"paused\" : false,\n  \"paused_cause\" : \"\",\n  \"paused_by\"
+        : \"\",\n  \"locked\" : true,\n  \"schedulable\" : false\n}"
     headers:
       Cache-Control:
       - max-age=0, private, must-revalidate
       Content-Type:
       - application/vnd.go.cd.v1+json;charset=utf-8
       Date:
-      - Fri, 06 Mar 2026 04:38:30 GMT
+      - Fri, 06 Mar 2026 04:43:44 GMT
       Expires:
       - Thu, 01 Jan 1970 00:00:00 GMT
       Set-Cookie:
-      - JSESSIONID=node012lmrftf5rfgha8mwulyd98wv9.node0; Path=/go; Expires=Fri, 20-Mar-2026
-        04:38:30 GMT; Max-Age=1209600; HttpOnly
+      - JSESSIONID=node01uwgd83pbq6mfs9kwzlqvfypv15.node0; Path=/go; Expires=Fri,
+        20-Mar-2026 04:43:44 GMT; Max-Age=1209600; HttpOnly
       Transfer-Encoding:
       - chunked
       Vary:
