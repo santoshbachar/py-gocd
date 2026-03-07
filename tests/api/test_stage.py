@@ -6,12 +6,12 @@ import gocd
 
 @pytest.fixture
 def server():
-    return gocd.Server('http://localhost:8153')
+    return gocd.Server('http://localhost:8153', user='admin', password='badger')
 
 
 @pytest.fixture
 def stage(server):
-    return server.stage('Dummy', 'stageOne', pipeline_counter=5)
+    return server.stage('up42', 'up42_stage', pipeline_counter=40)
 
 
 @vcr.use_cassette('tests/fixtures/cassettes/api/stage/history.yml')
@@ -19,11 +19,12 @@ def test_history(stage):
     response = stage.history()
 
     assert response.is_ok
-    assert response.content_type == 'application/json'
+    assert response.content_type == 'application/vnd.go.cd.v3+json'
     assert 'stages' in response
     run = response['stages'][0]
-    assert run['name'] == 'stageOne'
-    assert run['pipeline_name'] == 'Dummy'
+    assert run['name'] == stage.stage_name
+    assert run['pipeline_name'] == stage.pipeline_name
+    assert run['pipeline_counter'] == stage.pipeline_counter
     assert run['counter'] == '1'
 
 
@@ -42,10 +43,11 @@ def test_history_offset(stage):
 
 @vcr.use_cassette('tests/fixtures/cassettes/api/stage/instance.yml')
 def test_instance(stage):
-    response = stage.instance(1)
+    response = stage.instance(stage_counter=1);
 
     assert response.is_ok
-    assert response.content_type == 'application/json'
+    assert response.status_code == 200
+    assert response.content_type == 'application/vnd.go.cd.v3+json'
     assert response['name'] == stage.stage_name
     assert response['pipeline_name'] == stage.pipeline_name
     assert response['pipeline_counter'] == stage.pipeline_counter
