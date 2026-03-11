@@ -61,19 +61,20 @@ An example interaction:
 .. code-block:: python
 
     >>> from gocd import Server
-    >>> server = Server('http://localhost:8153', user='ba', password='secret')
-    >>> pipeline = server.pipeline('Example-Pipeline')
+    >>> server = Server('http://localhost:8153', user='admin', password='badger')
+    >>> pipeline = server.pipeline('up42')
     >>> response = pipeline.history()
     >>> bool(response)
     True
     >>> response.status_code
     200
     >>> response.content_type
-    'application/json'
+    'application/vnd.go.cd.v1+json'
     >>> response.is_ok
     True
     >>> response.body
-    {"pagination":{"offset":0,"total":1,"page_size":10},"pipelines":[...]"}
+    {'_links': {'next': {'href': 'http://localhost:8153/go/api/pipelines/up42/history?after=206
+    '}}, 'pipelines':[...]}
 
 Style
 -----
