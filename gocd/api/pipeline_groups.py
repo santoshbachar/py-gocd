@@ -50,7 +50,7 @@ class PipelineGroups(Endpoint):
             return set()
         elif self._pipelines is None and self.response:
             self._pipelines = set()
-            for group in self.response.payload:
+            for group in self.response.payload['_embedded']['groups']:
                 for pipeline in group['pipelines']:
                     self._pipelines.add(pipeline['name'])
 
