@@ -132,15 +132,11 @@ class Server(object):
         injected_data = self._inject_authenticity_token(data, path)
         body = self._encode_data(injected_data)
 
-        # Added by Santosh
-
         if DEBUG_MODE:
             print(f"🐞 {FILENAME} - path is %s" % path)
             print(f"🐞 {FILENAME} - data is %s" % data)
             print(f"🐞 {FILENAME} - headers is %s" % headers)
             print(f"🐞 {FILENAME} - method is %s" % method)
-
-        ###
 
         response = self.http.request(
             method,
