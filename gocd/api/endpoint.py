@@ -1,8 +1,10 @@
+import os
 from urllib.request import HTTPError
 
-
 from gocd.api.response import Response
+from gocd.config import DEBUG_MODE
 
+FILENAME = filename = os.path.basename(__file__)
 
 class Endpoint(object):
     # The cached responses
@@ -40,8 +42,9 @@ class Endpoint(object):
 
     def _join_path(self, path):
         # TODO: Make this more robust. `urlparse.urljoin` didn't quite work as I wanted.
-        print("🐞 self.get_base_path() = ", self.get_base_path())
-        print("🐞 path() = ", path)
+        if DEBUG_MODE:
+            print(f"🐞 {FILENAME} - self.get_base_path() = ", self.get_base_path())
+            print(f"🐞 {FILENAME} - path() = ", path)
         return '{0}/{1}'.format(self.get_base_path(), path).replace('//', '/')
 
     def _get(self, path, ok_status=None, headers=None):

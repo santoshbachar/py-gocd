@@ -1,5 +1,5 @@
+import os
 import re
-
 import json
 
 import urllib3
@@ -9,6 +9,10 @@ from six.moves.urllib.parse import urljoin
 from gocd.api import Pipeline, PipelineGroups, Stage
 
 __all__ = ['Server', 'AuthenticationFailed']
+
+from gocd.config import DEBUG_MODE
+
+FILENAME = filename = os.path.basename(__file__)
 
 
 class AuthenticationFailed(Exception):
@@ -130,10 +134,11 @@ class Server(object):
 
         # Added by Santosh
 
-        print("🐞 python debug - path is %s" % path)
-        print("🐞 python debug - data is %s" % data)
-        print("🐞 python debug - headers is %s" % headers)
-        print("🐞 python debug - method is %s" % method)
+        if DEBUG_MODE:
+            print(f"🐞 {FILENAME} - path is %s" % path)
+            print(f"🐞 {FILENAME} - data is %s" % data)
+            print(f"🐞 {FILENAME} - headers is %s" % headers)
+            print(f"🐞 {FILENAME} - method is %s" % method)
 
         ###
 
@@ -146,7 +151,9 @@ class Server(object):
             # redirect=True is default in urllib3
         )
 
-        print("🐞 python debug - response is %s" % response)
+        if DEBUG_MODE:
+            print(f"🐞 {FILENAME} - response.status_code is %s" % response.status)
+            print(f"🐞 {FILENAME} - response is %s" % response)
 
         self._set_session_cookie(response)
 
