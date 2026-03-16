@@ -102,7 +102,7 @@ test_series() {
     }
 
     echo "✅ All tests passed successfully!"
-    echo "⚠️ Check and run test.py to verify integration"
+    echo "⚠️ Check and run scripts/test.py to verify integration"
 }
 
 test_series
