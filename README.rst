@@ -37,8 +37,8 @@ language. I.e. something that is beyond bash.
 
 The project now requires Python 3.12.x and a new external dependency urllib3 https://pypi.org/project/urllib3/ to work.
 
-Anyone wanting to upgrade to this new version can do it easily via running a simple bash script
-with the name "test_upgrade_to_python3.sh".
+Anyone wanting to upgrade to this new version can do it easily via running this simple bash script
+"scripts/test_upgrade_to_python3.sh".
 This should take care of installing new dependency, upgrading new ones, installing test
 dependencies and running the tests for you to be able to confidently deploy it on your systems.
 

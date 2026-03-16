@@ -12,17 +12,29 @@ STAGE_COUNTER = 1
 server = Server('http://localhost:8153', USERNAME, PASSWORD)
 
 pipeline = server.pipeline(PIPELINE_NAME)
-response = pipeline.status()
+# response = pipeline.status()
+# print(response.is_ok)
+
+# groups = server.pipeline_groups()
+# all_pipeline_groups = groups.get_pipeline_groups().payload['_embedded']['groups']
+# all_pipeline_groups_name = all_pipeline_groups[0]['name']
+#
+# print(all_pipeline_groups_name)
+
+# response = pipeline.instance(41)
+# print(response.is_ok)
+# print ("hello")
+
+response = pipeline.unpause()
+print()
+
+response = pipeline.history()
 print(response.is_ok)
+# response.payload["pipelines"]
 
-# response = pipeline.instance(23)
-# print(response.is_ok)
+history = response["pipelines"][0]
 
-# response = pipeline.history()
-# print(response.is_ok)
-
-# history = response["pipelines"]
-
+print(history.is_ok)
 # response = pipeline.history(10);
 # print(response)
 # print(response.is_ok)
