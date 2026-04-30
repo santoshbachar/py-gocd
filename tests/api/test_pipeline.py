@@ -51,6 +51,7 @@ def test_history(pipeline, cassette_name, page_size, expected_counter):
     assert run['name'] == 'up42'
     assert run['counter'] == expected_counter
 
+
 @vcr.use_cassette('tests/fixtures/cassettes/api/pipeline/release-successful.yml')
 def test_release(locked_pipeline):
     response = locked_pipeline.release()
@@ -58,6 +59,7 @@ def test_release(locked_pipeline):
     assert response.is_ok
     assert response.content_type == "application/vnd.go.cd.v1+json"
     assert response.payload["message"] == f"Pipeline lock released for {locked_pipeline.name}"
+
 
 @vcr.use_cassette('tests/fixtures/cassettes/api/pipeline/release-when-pipeline-is-running.yml')
 def test_release_when_pipeline_is_running(locked_pipeline):
@@ -68,6 +70,7 @@ def test_release_when_pipeline_is_running(locked_pipeline):
     assert response.payload["message"] == ("Locked pipeline instance is currently running (one of "
                                            "the stages is in progress)")
 
+
 @vcr.use_cassette('tests/fixtures/cassettes/api/pipeline/release-unsuccessful.yml')
 def test_release_when_pipeline_is_unlocked(locked_pipeline):
     response = locked_pipeline.release()
@@ -77,6 +80,7 @@ def test_release_when_pipeline_is_unlocked(locked_pipeline):
     assert response.payload["message"] == ("Lock exists within the pipeline configuration but no "
                                            "pipeline instance is currently in progress")
 
+
 @vcr.use_cassette('tests/fixtures/cassettes/api/pipeline/pause-successful.yml')
 def test_pause_successful(pipeline):
     response = pipeline.pause('Time to sleep')
@@ -84,6 +88,7 @@ def test_pause_successful(pipeline):
     assert response.is_ok
     assert response.content_type == 'application/vnd.go.cd.v1+json'
     assert response.payload["message"] == f"Pipeline '{pipeline.name}' paused successfully."
+
 
 @vcr.use_cassette('tests/fixtures/cassettes/api/pipeline/pause-unsuccessful.yml')
 def test_pause_unsuccessful(pipeline):
@@ -102,6 +107,7 @@ def test_unpause_successful(pipeline):
     assert response.is_ok
     assert response.content_type == 'application/vnd.go.cd.v1+json'
     assert response.payload["message"] == f"Pipeline '{pipeline.name}' unpaused successfully."
+
 
 @vcr.use_cassette('tests/fixtures/cassettes/api/pipeline/unpause-unsuccessful.yml')
 def test_unpause_unsuccessful(pipeline):
@@ -127,6 +133,7 @@ def test_status_when_schedulable(pipeline):
     assert len(payload['paused_cause']) is 0
     assert payload['locked'] is False
 
+
 @vcr.use_cassette('tests/fixtures/cassettes/api/pipeline/status_when_paused.yml')
 def test_status_when_paused(pipeline):
     response = pipeline.status()
@@ -140,6 +147,7 @@ def test_status_when_paused(pipeline):
     assert len(payload['paused_cause']) > 0
     assert payload['schedulable'] is False
     assert payload['locked'] is False
+
 
 @vcr.use_cassette('tests/fixtures/cassettes/api/pipeline/status_when_locked.yml')
 def test_status_when_locked(pipeline):
@@ -155,6 +163,7 @@ def test_status_when_locked(pipeline):
     assert len(payload['paused_cause']) is 0
     assert payload['schedulable'] is False
 
+
 @vcr.use_cassette('tests/fixtures/cassettes/api/pipeline/instance.yml')
 def test_instance(pipeline):
     response = pipeline.instance(23)
@@ -163,6 +172,7 @@ def test_instance(pipeline):
     assert response.content_type == 'application/vnd.go.cd.v1+json'
     assert response['name'] == pipeline.name
     assert response['counter'] == 23
+
 
 @vcr.use_cassette('tests/fixtures/cassettes/api/pipeline/instance-zero-pipeline-counter.yml')
 def test_instance_without_argument_returns_latest(pipeline):
@@ -173,6 +183,7 @@ def test_instance_without_argument_returns_latest(pipeline):
     assert response.payload["message"] == ("Your request could not be processed. The pipeline "
                                            "counter cannot be less than 1.")
 
+
 @vcr.use_cassette('tests/fixtures/cassettes/api/pipeline/schedule-successful-no-args.yml')
 def test_schedule(pipeline):
     response = pipeline.schedule()
@@ -181,6 +192,7 @@ def test_schedule(pipeline):
     assert response.is_ok
     assert response.content_type == 'application/vnd.go.cd.v1+json'
     assert response.payload["message"] == f"Request to schedule pipeline {pipeline.name} accepted"
+
 
 @vcr.use_cassette('tests/fixtures/cassettes/api/pipeline/schedule-successful-with-material.yml')
 def test_schedule_with_git_arg(pipeline):
@@ -241,18 +253,19 @@ def test_schedule_when_pipeline_is_already_running(pipeline):
                                            " { Stage [up42_stage]"
                                            " in pipeline [up42] is still in progress }")
 
+
 @vcr.use_cassette(
     'tests/fixtures/cassettes/api/pipeline/schedule-successful-and-return-new-instance.yml'
 )
 def test_schedule_pipeline_and_return_new_instance(pipeline):
     before_run = pipeline.history()['pipelines'][0]
     # By setting the backoff to 0 the test runs faster, since it's all mocked out anyway.
-    response = pipeline.schedule(return_new_instance=True, backoff_time=0)
+    response = pipeline.schedule(return_new_instance=True, maximum_backoff_time=100)
 
     assert response.is_ok
     assert response.status_code == 200
     assert response.content_type == 'application/vnd.go.cd.v1+json'
-    assert before_run['counter'] == 39
+    assert before_run['counter'] == 88
     assert response.payload['counter'] != before_run['counter']
     assert (before_run['counter'] + 1) == response['counter']
 
@@ -271,6 +284,7 @@ def test_console_output_single_stage(pipeline):
             'job_result': 'Failed',
             } == metadata
 
+
 # To-do: Remove the asserts and fix the logic
 @vcr.use_cassette('tests/fixtures/cassettes/api/pipeline/console-output-multiple-stages.yml')
 def test_console_output_multiple_stages(pipeline_multiple_stages):
@@ -287,6 +301,7 @@ def test_console_output_multiple_stages(pipeline_multiple_stages):
         valid += 1
 
     # assert valid == 3
+
 
 @vcr.use_cassette('tests/fixtures/cassettes/api/pipeline/console-output-job-not-finished.yml')
 def test_console_output_only_where_stage_has_finished(pipeline_multiple_stages_manual):

@@ -137,7 +137,7 @@ class Pipeline(Endpoint):
         })
 
     def schedule(self, variables=None, secure_variables=None, materials=None,
-                 return_new_instance=False, backoff_time=1.0):
+                 return_new_instance=False, maximum_backoff_time=1.0):
         """Schedule a pipeline run
 
         Aliased as :meth:`run`, :meth:`schedule`, and :meth:`trigger`.
@@ -155,7 +155,7 @@ class Pipeline(Endpoint):
             users easily can get the new instance number. **Note:** This is done
             in a very naive way, it just checks that the instance number is
             higher than before the pipeline was triggered.
-          backoff_time (float): How long between each check for
+          maximum_backoff_time (float): How long to check for
             :arg:`return_new_instance`.
 
          .. __: http://api.go.cd/current/#scheduling-pipelines
@@ -179,16 +179,12 @@ class Pipeline(Endpoint):
         # TODO: Replace this with whatever is the official way as soon as gocd#990 is fixed.
         # https://github.com/gocd/gocd/issues/990
         if return_new_instance:
-            pipelines = self.history()['pipelines']
-            if len(pipelines) == 0:
-                last_run = None
-            else:
-                last_run = pipelines[0]['counter']
+            before = self.history()['pipelines'][0]['counter'] if self.history()['pipelines'] else 0
+
             response = self._post('/schedule', ok_status=202, method="POST", **scheduling_args)
+
             if not response:
                 return response
-
-            max_tries = 10
 
             # I couldn't understand the logic, so I wrote it by myself
             #
@@ -202,13 +198,38 @@ class Pipeline(Endpoint):
             #         time.sleep(backoff_time)
             #         max_tries -= 1
 
-            while max_tries > 0:
-                current_pipeline = self.history()['pipelines'][0]
-                if current_pipeline['counter'] > last_run:
-                    return self.instance(current_pipeline['counter'])
-                else:
-                    time.sleep(backoff_time)
-                    max_tries -= 1
+            # new logic
+
+            instance_start_timeout = maximum_backoff_time
+            while instance_start_timeout > 0:
+                latest = self.history()['pipelines'][0]['counter']
+
+                if latest > before:
+                    instance_id = latest
+                    break
+
+                time.sleep(1)
+                instance_start_timeout -= 1
+                print(f"😴 Slept for 1 second while waiting for the pipeline to start | remaining "
+                      f"seconds: {instance_start_timeout}")
+            else:
+                raise TimeoutError("⛔️ Timed out waiting for new pipeline instance to start")
+
+            pipeline_finish_timeout = maximum_backoff_time
+            while pipeline_finish_timeout  > 0:
+                response = self.instance(instance_id)
+                if self._is_pipeline_finished(response):
+                    print(f"✅ Pipeline instance #{instance_id} finished with remaining seconds:"
+                          f" {pipeline_finish_timeout}")
+                    break
+
+                time.sleep(1)
+                pipeline_finish_timeout -= 1
+                print(f"😴 Slept for 1 second while waiting for the pipeline to finish | remaining "
+                      f"seconds: {pipeline_finish_timeout}")
+            else:
+                raise TimeoutError(f"⛔️ Timed out waiting for new pipeline instance {instance_id} to "
+                                   f"finish")
 
             # I can't come up with a scenario in testing where this would happen, but it seems
             # better than returning None.
@@ -220,6 +241,16 @@ class Pipeline(Endpoint):
     run = schedule
     #: This is an alias for :meth:`schedule`
     trigger = schedule
+
+    def _is_pipeline_finished(self, response):
+        """Return True if all stages in the pipeline instance are finished."""
+        stage_number = 1
+        for stage in response.payload.get('stages', []):
+            print(f"stage #{stage_number} = {stage}")
+            if stage.get('result') in (None, 'Unknown', ''):
+                return False
+            stage_number += 1
+        return True
 
     def artifact(self, counter, stage, job, stage_counter=1):
         """Helper to instantiate an :class:`gocd.api.artifact.Artifact` object

@@ -12,6 +12,9 @@ STAGE_COUNTER = 1
 server = Server('http://localhost:8153', USERNAME, PASSWORD)
 
 pipeline = server.pipeline(PIPELINE_NAME)
+
+response =  pipeline.schedule(return_new_instance=True, maximum_backoff_time=100)
+
 # response = pipeline.status()
 # print(response.is_ok)
 
@@ -25,16 +28,16 @@ pipeline = server.pipeline(PIPELINE_NAME)
 # print(response.is_ok)
 # print ("hello")
 
-response = pipeline.unpause()
-print()
+# response = pipeline.release()
+# print(response)
 
-response = pipeline.history()
-print(response.is_ok)
+# response = pipeline.history()
+# print(response.is_ok)
 # response.payload["pipelines"]
 
-history = response["pipelines"][0]
+# history = response["pipelines"][0]
 
-print(history.is_ok)
+# print(history.is_ok)
 # response = pipeline.history(10);
 # print(response)
 # print(response.is_ok)
