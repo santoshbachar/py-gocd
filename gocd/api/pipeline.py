@@ -1,4 +1,5 @@
 import time
+import sys
 from gocd.api.response import Response
 from gocd.api.endpoint import Endpoint
 from gocd.api.artifact import Artifact
@@ -67,7 +68,7 @@ class Pipeline(Endpoint):
           Response: :class:`gocd.api.response.Response` object
         """
         return self._post('/unlock', headers={
-            "Accept":"application/vnd.go.cd.v1+json"
+            "Accept": "application/vnd.go.cd.v1+json"
             , "X-GoCD-Confirm": "True"
             , "Content-Type": "application/json"
         }, method="POST")
@@ -140,7 +141,7 @@ class Pipeline(Endpoint):
         })
 
     def schedule(self, variables=None, secure_variables=None, materials=None,
-                 return_new_instance=False, maximum_backoff_time=1.0):
+        return_new_instance=False, maximum_backoff_time=1.0):
         """Schedule a pipeline run
 
         Aliased as :meth:`run`, :meth:`schedule`, and :meth:`trigger`.
@@ -171,9 +172,9 @@ class Pipeline(Endpoint):
             secure_variables=secure_variables,
             material_fingerprint=materials,
             headers={
-                "Accept":"application/vnd.go.cd.v1+json",
-                "Content-Type":"application/json",
-                "X-GoCD-Confirm":"true"
+                "Accept": "application/vnd.go.cd.v1+json",
+                "Content-Type": "application/json",
+                "X-GoCD-Confirm": "true"
             },
         )
 
@@ -213,17 +214,28 @@ class Pipeline(Endpoint):
 
                 time.sleep(1)
                 instance_start_timeout -= 1
-                print(f"😴 Slept for 1 second while waiting for the pipeline to start | remaining "
-                      f"seconds: {instance_start_timeout}")
+                print(f"😴 Slept for 1 second while waiting on agent for the pipeline to start | "
+                      f"remaining seconds: {instance_start_timeout}")
             else:
-                raise TimeoutError("⛔️ Timed out waiting for new pipeline instance to start")
+                print("🤖💥 Timed out waiting on agent for new pipeline instance to start")
+                sys.exit(1)
 
             pipeline_finish_timeout = maximum_backoff_time
-            while pipeline_finish_timeout  > 0:
+            while pipeline_finish_timeout > 0:
                 response = self.instance(instance_id)
-                if self._is_pipeline_finished(response):
-                    print(f"✅ Pipeline instance #{instance_id} finished with remaining seconds:"
-                          f" {pipeline_finish_timeout}")
+                is_finished, result = self._is_pipeline_finished(response)
+                if is_finished:
+                    result_emoji = ''
+                    if result == 'Passed':
+                        result_emoji = '✅'
+                    elif result == 'Failed':
+                        result_emoji = '⛔️'
+                    elif result == 'Cancelled':
+                        result_emoji = '⚠️'
+
+                    print(
+                        f"{result_emoji} Pipeline instance #{instance_id} finished with remaining "
+                        f"seconds: {pipeline_finish_timeout}")
                     break
 
                 time.sleep(1)
@@ -231,8 +243,8 @@ class Pipeline(Endpoint):
                 print(f"😴 Slept for 1 second while waiting for the pipeline to finish | remaining "
                       f"seconds: {pipeline_finish_timeout}")
             else:
-                raise TimeoutError(f"⛔️ Timed out waiting for new pipeline instance {instance_id} to "
-                                   f"finish")
+                print(f"⏰💥 Timed out waiting for new pipeline instance {instance_id} to finish")
+                sys.exit(1)
 
             # I can't come up with a scenario in testing where this would happen, but it seems
             # better than returning None.
@@ -251,11 +263,11 @@ class Pipeline(Endpoint):
         for stage in response.payload.get('stages', []):
             print(f"stage #{stage_number} = {stage}")
             if stage.get('result') in (None, 'Unknown', ''):
-                return False
+                return False, "In Progress"
             if stage.get('result') in ('Failed', 'Cancelled'):
-                return True
+                return True, stage.get('result')
             stage_number += 1
-        return True
+        return True, "Passed"
 
     def artifact(self, counter, stage, job, stage_counter=1):
         """Helper to instantiate an :class:`gocd.api.artifact.Artifact` object
