@@ -142,7 +142,7 @@ class Pipeline(Endpoint):
         })
 
     def schedule(self, variables=None, secure_variables=None, materials=None,
-        return_new_instance=False, maximum_backoff_time=1.0):
+        return_new_instance=False, maximum_backoff_time=1.0, backoff_time=1.0):
         """Schedule a pipeline run
 
         Aliased as :meth:`run`, :meth:`schedule`, and :meth:`trigger`.
@@ -226,8 +226,8 @@ class Pipeline(Endpoint):
                     instance_id = latest
                     break
 
-                time.sleep(1)
-                instance_start_timeout -= 1
+                time.sleep(backoff_time)
+                instance_start_timeout -= backoff_time
                 logging.debug(f"😴 Slept for 1 second while waiting on agent for the pipeline to start | "
                       f"remaining seconds: {instance_start_timeout}")
             else:
@@ -252,8 +252,8 @@ class Pipeline(Endpoint):
                         f"seconds: {pipeline_finish_timeout}")
                     break
 
-                time.sleep(1)
-                pipeline_finish_timeout -= 1
+                time.sleep(backoff_time)
+                pipeline_finish_timeout -= backoff_time
                 logging.debug(f"😴 Slept for 1 second while waiting for the pipeline to finish | "
                          f"remaining seconds: {pipeline_finish_timeout}")
             else:
