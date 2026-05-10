@@ -16,45 +16,6 @@ PYTHON_VERSION=$("$WHICH_PYTHON" --version 2>&1 | awk '{print $2}')
 # Set Python path
 PYTHON_EXEC="$WHICH_PYTHON"
 
-# Extract major.minor.patch (in case there are extra suffixes like 3.12.12+)
-VERSION_MAJOR=$(echo "$PYTHON_VERSION" | cut -d. -f1)
-VERSION_MINOR=$(echo "$PYTHON_VERSION" | cut -d. -f2)
-# Patch can be empty or anything
-
-if [[ ! "$VERSION_MAJOR" -eq 3 && "$VERSION_MINOR" -eq 12 ]]; then
-    echo "py-gocd strictly requires Python 3.12.x (any patch version):"
-    echo "Current version: $PYTHON_VERSION"
-    echo "Please provide the path to Python 3.12.x (can be a virtual environment):"
-    read -r PYTHON_VENV
-
-    # Validate that the user actually entered something
-    if [ -z "$PYTHON_VENV" ]; then
-        echo "No path provided. Exiting."
-        exit 1
-    fi
-
-    # Check if the provided python exists and is executable
-    if [ ! -x "$PYTHON_VENV" ]; then
-        echo "Error: '$PYTHON_VENV' is not executable or does not exist."
-        exit 1
-    fi
-
-    # Now check the version of the provided Python
-    PYTHON_VENV_VERSION=$("$PYTHON_VENV" --version 2>&1)
-
-    if [ "$PYTHON_VENV_VERSION" != "Python 3.12.12" ]; then
-        echo "Error: The provided Python is '$PYTHON_VENV_VERSION', but 3.12.12 is required."
-        exit 1
-    fi
-
-    echo "Using custom Python: $PYTHON_VENV ($PYTHON_VENV_VERSION)"
-    PYTHON_EXEC="$PYTHON_VENV"
-else
-    echo "Using system Python: $PYTHON_EXEC ($PYTHON_VERSION)"
-fi
-
-# Now you can safely use "$PYTHON_EXEC" as your Python interpreter
-
 PIP_CMD="$PYTHON_EXEC -m pip"
 echo "Using pip: $PIP_CMD"
 
