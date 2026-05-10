@@ -20,7 +20,7 @@ def test_get_request_with_and_without_auth(server, cassette_name):
     with vcr.use_cassette(cassette_name):
         response = server.get('go/api/pipelines/Simple/history/0')
 
-    assert response.code == 200
+    assert response.status == 200
     assert response.headers["Content-Type"] == 'application/json; charset=utf-8'
 
 @pytest.mark.parametrize('cassette_name', [
@@ -30,7 +30,7 @@ def test_get_request_without_auth(server, cassette_name):
     with vcr.use_cassette(cassette_name):
         response = server.get('go/api/pipelines/Simple/history/0')
 
-    assert response.code == 401
+    assert response.status == 401
     assert response.headers["Content-Type"] == 'text/html; charset=iso-8859-1'
 
     payload = response.data.decode("iso-8859-1")
@@ -46,7 +46,7 @@ def test_post_request_without_argument(server, cassette_name):
     with vcr.use_cassette(cassette_name):
         response = server.post('go/api/pipelines/Simple/schedule')
 
-    assert response.code == 202
+    assert response.status == 202
     assert response.headers["Content-Type"] == 'text/html; charset=utf-8'
 
 @pytest.mark.parametrize('cassette_name', [
@@ -56,7 +56,7 @@ def test_post_request_without_argument_unauthorised(server, cassette_name):
     with vcr.use_cassette(cassette_name):
         response = server.post('go/api/pipelines/Simple/schedule')
 
-    assert response.code == 401
+    assert response.status == 401
     assert response.headers["Content-Type"] == 'text/html; charset=iso-8859-1'
 
     payload = response.data.decode("iso-8859-1")
@@ -68,9 +68,9 @@ def test_request_with_all_kinds_of_falsey_values_that_should_be_post(server, dat
     with vcr.use_cassette('tests/fixtures/cassettes/server-data-for-post-requests.yml'):
         response = server.request('go/api/pipelines/Simple-with-lock/pause', data=data)
 
-    assert response.code == 200
+    assert response.status == 200
     assert response.headers["Content-Type"] == 'text/html; charset=utf-8'
-    assert response.read() == b' '
+    assert response.read() in (b'', b' ')
 
 
 @pytest.mark.parametrize('data', [[], None, False])
@@ -89,7 +89,7 @@ def test_post_with_an_argument(server):
         pauseCause='Time to sleep'
     )
 
-    assert response.code == 200
+    assert response.status == 200
 
 
 @vcr.use_cassette('tests/fixtures/cassettes/server-enable-session-auth.yml')

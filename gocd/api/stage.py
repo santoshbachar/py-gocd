@@ -45,19 +45,23 @@ class Stage(Endpoint):
         if self.pipeline_name is None or self.pipeline_counter is None or self.stage_name is None:
             raise Exception('You must provide a pipeline name, a pipeline counter, and a stage '
                             'name')
+        value = self.get_path_for
 
-        match self.get_path_for:
-            case self.PathAssist.INSTANCE | self.PathAssist.CANCEL:
-                return "{pipeline_name}/{pipeline_counter}/{stage_name}".format(
-                    pipeline_name=self.pipeline_name,
-                    pipeline_counter=self.pipeline_counter,
-                    stage_name=self.stage_name
-                )
-            case self.PathAssist.HISTORY:
-                return "{pipeline_name}/{stage_name}".format(pipeline_name=self.pipeline_name,stage_name=self.stage_name)
-            case _:
-                return None;
+        if value in (self.PathAssist.INSTANCE, self.PathAssist.CANCEL):
+           return "{}/{}/{}".format(
+               self.pipeline_name,
+               self.pipeline_counter,
+               self.stage_name
+           )
 
+        elif value == self.PathAssist.HISTORY:
+           return "{}/{}".format(
+               self.pipeline_name,
+               self.stage_name
+           )
+
+        else:
+           return None
 
     def run(self):
         """Runs a specified stage
