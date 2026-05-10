@@ -1,6 +1,7 @@
 import os
 import re
 import json
+import logging
 
 import urllib3
 from urllib3.util import make_headers
@@ -50,7 +51,7 @@ class Server(object):
     _session_id = None
     _authenticity_token = None
 
-    def __init__(self, host, user=None, password=None):
+    def __init__(self, host, user=None, password=None, log_file=None):
         self.host = host.rstrip('/') + '/'  # Ensure consistent trailing slash
         self.user = user
         self.password = password
@@ -62,6 +63,16 @@ class Server(object):
 
         # Create PoolManager with default headers (reused for connection pooling)
         self.http = urllib3.PoolManager(headers=headers)
+
+        if log_file:
+            logging.basicConfig(
+                filename=log_file,
+                filemode='a',  # 'a' for append (default), 'w' for overwrite
+                level=logging.DEBUG,
+                format='%(asctime)s - %(levelname)s - %(message)s'
+            )
+
+            logging.info(f"The server is initialised @ #{self.host}")
 
     def get(self, path):
         """Performs a HTTP GET request to the Go server

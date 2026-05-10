@@ -1,5 +1,6 @@
 import time
 import sys
+import logging
 from gocd.api.response import Response
 from gocd.api.endpoint import Endpoint
 from gocd.api.artifact import Artifact
@@ -167,6 +168,19 @@ class Pipeline(Endpoint):
         Returns:
           Response: :class:`gocd.api.response.Response` object
         """
+
+        root_logger = logging.getLogger()
+        log_file = None
+
+        # Attempt to find the file
+        for handler in root_logger.handlers:
+            if isinstance(handler, logging.FileHandler):
+                log_file = handler.baseFilename
+                break
+
+        if log_file:
+            print(f"You can check {log_file} while you wait for the program to finish")
+
         scheduling_args = dict(
             variables=variables,
             secure_variables=secure_variables,
@@ -214,10 +228,10 @@ class Pipeline(Endpoint):
 
                 time.sleep(1)
                 instance_start_timeout -= 1
-                print(f"😴 Slept for 1 second while waiting on agent for the pipeline to start | "
+                logging.debug(f"😴 Slept for 1 second while waiting on agent for the pipeline to start | "
                       f"remaining seconds: {instance_start_timeout}")
             else:
-                print("🤖💥 Timed out waiting on agent for new pipeline instance to start")
+                logging.info("🤖💥 Timed out waiting on agent for new pipeline instance to start")
                 sys.exit(1)
 
             pipeline_finish_timeout = maximum_backoff_time
@@ -233,17 +247,18 @@ class Pipeline(Endpoint):
                     elif result == 'Cancelled':
                         result_emoji = '⚠️'
 
-                    print(
+                    logging.info(
                         f"{result_emoji} Pipeline instance #{instance_id} finished with remaining "
                         f"seconds: {pipeline_finish_timeout}")
                     break
 
                 time.sleep(1)
                 pipeline_finish_timeout -= 1
-                print(f"😴 Slept for 1 second while waiting for the pipeline to finish | remaining "
-                      f"seconds: {pipeline_finish_timeout}")
+                logging.debug(f"😴 Slept for 1 second while waiting for the pipeline to finish | "
+                         f"remaining seconds: {pipeline_finish_timeout}")
             else:
-                print(f"⏰💥 Timed out waiting for new pipeline instance {instance_id} to finish")
+                logging.info(f"⏰💥 Timed out waiting for new pipeline instance {instance_id} to "
+                           f"finish")
                 sys.exit(1)
 
             # I can't come up with a scenario in testing where this would happen, but it seems
@@ -261,7 +276,7 @@ class Pipeline(Endpoint):
         """Return True if all stages in the pipeline instance are finished."""
         stage_number = 1
         for stage in response.payload.get('stages', []):
-            print(f"stage #{stage_number} = {stage}")
+            logging.debug(f"stage #{stage_number} = {stage}")
             if stage.get('result') in (None, 'Unknown', ''):
                 return False, "In Progress"
             if stage.get('result') in ('Failed', 'Cancelled'):
