@@ -67,7 +67,10 @@ class Pipeline(Endpoint):
           Response: :class:`gocd.api.response.Response` object
         """
         return self._post('/unlock', headers={
-            "Accept":"application/vnd.go.cd.v1+json","X-GoCD-Confirm": "True"}, method="POST")
+            "Accept":"application/vnd.go.cd.v1+json"
+            , "X-GoCD-Confirm": "True"
+            , "Content-Type": "application/json"
+        }, method="POST")
 
     #: This is an alias for :meth:`release`
     unlock = release
