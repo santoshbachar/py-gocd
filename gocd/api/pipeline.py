@@ -228,8 +228,8 @@ class Pipeline(Endpoint):
 
                 time.sleep(backoff_time)
                 instance_start_timeout -= backoff_time
-                logging.debug(f"😴 Slept for 1 second while waiting on agent for the pipeline to start | "
-                      f"remaining seconds: {instance_start_timeout}")
+                logging.debug(f"😴 Slept for 1 second while waiting on agent for the"
+                              f" pipeline {self.name} to start | remaining seconds: {instance_start_timeout}")
             else:
                 logging.info("🤖💥 Timed out waiting on agent for new pipeline instance to start")
                 sys.exit(1)
@@ -248,14 +248,15 @@ class Pipeline(Endpoint):
                         result_emoji = '⚠️'
 
                     logging.info(
-                        f"{result_emoji} Pipeline instance #{instance_id} finished with remaining "
+                        f"{result_emoji} Pipeline '{self.name}' having instance #{instance_id}"
+                        f" finished with remaining "
                         f"seconds: {pipeline_finish_timeout}")
                     break
 
                 time.sleep(backoff_time)
                 pipeline_finish_timeout -= backoff_time
-                logging.debug(f"😴 Slept for 1 second while waiting for the pipeline to finish | "
-                         f"remaining seconds: {pipeline_finish_timeout}")
+                logging.debug(f"😴 Slept for 1 second while waiting for the pipeline {self.name} "
+                              f"to finish | remaining seconds: {pipeline_finish_timeout}")
             else:
                 logging.info(f"⏰💥 Timed out waiting for new pipeline instance {instance_id} to "
                            f"finish")
@@ -276,7 +277,7 @@ class Pipeline(Endpoint):
         """Return True if all stages in the pipeline instance are finished."""
         stage_number = 1
         for stage in response.payload.get('stages', []):
-            logging.debug(f"stage #{stage_number} = {stage}")
+            logging.debug(f"{self.name} stage #{stage_number} = {stage}")
             if stage.get('result') in (None, 'Unknown', ''):
                 return False, "In Progress"
             if stage.get('result') in ('Failed', 'Cancelled'):
