@@ -249,6 +249,8 @@ class Pipeline(Endpoint):
             print(f"stage #{stage_number} = {stage}")
             if stage.get('result') in (None, 'Unknown', ''):
                 return False
+            if stage.get('result') in ('Failed', 'Cancelled'):
+                return True
             stage_number += 1
         return True
 
